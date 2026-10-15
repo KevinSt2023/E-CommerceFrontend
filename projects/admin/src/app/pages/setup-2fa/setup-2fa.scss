@@ -1,0 +1,28 @@
+.wrap { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; }
+.box { width: 100%; max-width: 460px; padding: 32px; box-shadow: var(--ax-shadow); }
+.head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 22px; }
+.head .ax-wordmark { font-size: 1.5rem; }
+.req { font-size: 0.65rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: #fff; background: var(--ax-red-grad); padding: 4px 9px; border-radius: 6px; }
+
+.err { font-size: 0.82rem; color: #ff6b6b; background: rgba(255, 30, 45, 0.1); border: 1px solid rgba(255, 30, 45, 0.3); border-radius: 10px; padding: 10px 12px; margin-bottom: 16px; }
+.err i { margin-right: 6px; }
+
+.intro { text-align: center; }
+.shield { width: 64px; height: 64px; border-radius: 50%; margin: 6px auto 16px; display: flex; align-items: center; justify-content: center; background: rgba(255, 30, 45, 0.12); border: 1px solid rgba(255, 30, 45, 0.35); color: var(--ax-red); font-size: 1.7rem; }
+.intro h2, .recovery h2 { font-size: 1.25rem; margin-bottom: 10px; }
+.intro p, .recovery p { color: var(--ax-text-dim); font-size: 0.9rem; line-height: 1.6; margin-bottom: 20px; }
+.full { width: 100%; }
+.link { display: block; width: 100%; margin-top: 14px; background: none; border: none; color: var(--ax-text-muted); cursor: pointer; font-size: 0.84rem; }
+.link:hover { color: var(--ax-red); }
+
+.step-text { font-size: 0.88rem; color: var(--ax-text-dim); margin: 14px 0 10px; }
+.qr { margin: 0 auto 14px; border-radius: 10px; background: #fff; padding: 8px; }
+.manual { display: flex; flex-direction: column; gap: 6px; margin-bottom: 8px; }
+.manual span { font-size: 0.76rem; color: var(--ax-text-muted); }
+.manual code { font-family: monospace; letter-spacing: 0.1em; color: var(--ax-silver); background: var(--ax-black); border: 1px solid var(--ax-border); border-radius: 8px; padding: 10px; word-break: break-all; font-size: 0.85rem; }
+.code { text-align: center; letter-spacing: 0.35em; font-size: 1.15rem; font-weight: 700; margin-bottom: 14px; }
+
+.recovery .ok { text-align: center; }
+.recovery .ok i { color: var(--ax-green); font-size: 2rem; display: block; margin-bottom: 8px; }
+.codes { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+.codes span { font-family: monospace; text-align: center; background: var(--ax-black); border: 1px solid var(--ax-border); border-radius: 8px; padding: 10px; font-size: 0.9rem; letter-spacing: 0.06em; }

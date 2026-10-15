@@ -1,0 +1,96 @@
+@import 'primeicons/primeicons.css';
+
+:root {
+  --ax-black: #0b0b0d;
+  --ax-bg: #0d0d11;
+  --ax-surface: #141418;
+  --ax-surface-2: #1b1b22;
+  --ax-surface-3: #22222b;
+  --ax-border: #2a2a33;
+  --ax-border-soft: #22222a;
+  --ax-silver: #d6d9de;
+  --ax-silver-dim: #9aa0a8;
+  --ax-text: #edeff3;
+  --ax-text-dim: #a6abb5;
+  --ax-text-muted: #71767e;
+  --ax-red: #ff1e2d;
+  --ax-red-600: #e11021;
+  --ax-red-700: #bd0c1a;
+  --ax-red-glow: rgba(255, 30, 45, 0.35);
+  --ax-metal: linear-gradient(135deg, #f2f3f5 0%, #c3c7cd 28%, #82868e 52%, #e4e6ea 74%, #9aa0a8 100%);
+  --ax-red-grad: linear-gradient(135deg, #ff3b47 0%, #e11021 55%, #9c0f1b 100%);
+  --ax-green: #2ecc71;
+  --ax-amber: #ffc33d;
+  --ax-blue: #6bb3ff;
+  --ax-radius: 12px;
+  --ax-shadow: 0 10px 30px -12px rgba(0, 0, 0, 0.7);
+  --ax-sidebar-w: 248px;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; min-height: 100%; }
+body {
+  background: var(--ax-bg);
+  color: var(--ax-text);
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 14px;
+  -webkit-font-smoothing: antialiased;
+}
+h1, h2, h3, h4 { margin: 0; font-weight: 700; color: var(--ax-text); }
+a { color: inherit; text-decoration: none; }
+img { max-width: 100%; display: block; }
+.ax-wordmark {
+  font-family: 'Orbitron', sans-serif; font-weight: 800; letter-spacing: 0.12em;
+  background: var(--ax-metal); -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.ax-wordmark .ax-x { color: var(--ax-red); -webkit-text-fill-color: var(--ax-red); }
+
+/* Botones base */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 10px 16px; border-radius: 10px; font-weight: 700; font-size: 0.85rem; cursor: pointer;
+  border: 1px solid transparent; transition: all 0.18s; font-family: inherit;
+}
+.btn-primary { background: var(--ax-red-grad); color: #fff; box-shadow: 0 6px 18px -8px var(--ax-red-glow); }
+.btn-primary:hover:not(:disabled) { transform: translateY(-1px); }
+.btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+.btn-ghost { background: var(--ax-surface); border-color: var(--ax-border); color: var(--ax-text); }
+.btn-ghost:hover { border-color: var(--ax-silver-dim); }
+.btn-sm { padding: 7px 12px; font-size: 0.78rem; border-radius: 8px; }
+
+/* Inputs */
+.inp, select.inp {
+  background: var(--ax-surface); color: var(--ax-text); border: 1px solid var(--ax-border);
+  border-radius: 10px; padding: 10px 12px; font-size: 0.86rem; outline: none; font-family: inherit; width: 100%;
+}
+.inp:focus { border-color: var(--ax-red); box-shadow: 0 0 0 3px rgba(255, 30, 45, 0.1); }
+
+/* Card */
+.card {
+  background: linear-gradient(180deg, var(--ax-surface-2), var(--ax-surface));
+  border: 1px solid var(--ax-border); border-radius: var(--ax-radius);
+}
+
+/* Badges de estado */
+.badge { font-size: 0.72rem; font-weight: 700; padding: 4px 10px; border-radius: 999px; display: inline-block; white-space: nowrap; }
+.badge-amber { background: rgba(255, 180, 0, 0.14); color: var(--ax-amber); }
+.badge-green { background: rgba(46, 204, 113, 0.14); color: var(--ax-green); }
+.badge-blue { background: rgba(80, 160, 255, 0.14); color: var(--ax-blue); }
+.badge-red { background: rgba(255, 30, 45, 0.14); color: #ff6b6b; }
+.badge-gray { background: rgba(255, 255, 255, 0.07); color: var(--ax-text-dim); }
+
+/* Tabla */
+.tbl { width: 100%; border-collapse: collapse; }
+.tbl th {
+  text-align: left; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em;
+  color: var(--ax-text-muted); font-weight: 700; padding: 12px 14px; border-bottom: 1px solid var(--ax-border);
+}
+.tbl td { padding: 13px 14px; border-bottom: 1px solid var(--ax-border-soft); font-size: 0.86rem; }
+.tbl tr:hover td { background: rgba(255, 255, 255, 0.02); }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 9px; height: 9px; }
+::-webkit-scrollbar-track { background: var(--ax-black); }
+::-webkit-scrollbar-thumb { background: var(--ax-surface-3); border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: var(--ax-red-700); }

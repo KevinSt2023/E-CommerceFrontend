@@ -1,0 +1,109 @@
+@if (loading()) {
+  <div class="ax-container pd-loading"><i class="pi pi-spin pi-spinner"></i> Cargando producto...</div>
+} @else if (notFound()) {
+  <div class="ax-container pd-empty">
+    <i class="pi pi-exclamation-triangle"></i>
+    <p>Producto no encontrado.</p>
+    <a routerLink="/catalogo" class="btn">Ver catálogo</a>
+  </div>
+} @else if (product(); as p) {
+  <div class="ax-container pd">
+    <div class="crumbs">
+      <a routerLink="/">Inicio</a> <i class="pi pi-angle-right"></i>
+      <a [routerLink]="['/catalogo']" [queryParams]="{ categoria: p.categorySlug }">{{ p.categoryName }}</a>
+      <i class="pi pi-angle-right"></i> <span>{{ p.name }}</span>
+    </div>
+
+    <div class="pd-grid">
+      <!-- Galería -->
+      <div class="gallery">
+        <div class="main-img">
+          @if (p.isOnSale) { <span class="badge-sale">-{{ p.discountPercentage }}%</span> }
+          @if (activeImage()) { <img [src]="activeImage()" [alt]="p.name" /> }
+          @else { <div class="ph"><i class="pi pi-image"></i></div> }
+        </div>
+        @if (p.images.length > 1) {
+          <div class="thumbs">
+            @for (img of p.images; track img.url) {
+              <button class="thumb" [class.active]="activeImage() === img.url" (click)="activeImage.set(img.url)">
+                <img [src]="img.url" [alt]="img.altText || p.name" />
+              </button>
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Info -->
+      <div class="info">
+        <span class="brand">{{ p.brandName }}</span>
+        <h1>{{ p.name }}</h1>
+        <div class="meta">
+          <span class="rating"><i class="pi pi-star-fill"></i> {{ p.ratingAverage | number: '1.1-1' }} ({{ p.ratingCount }})</span>
+          <span class="sku">SKU: {{ p.sku }}</span>
+          <span class="cond ax-chip">{{ p.condition === 'New' ? 'Nuevo' : p.condition }}</span>
+        </div>
+
+        <div class="price-box">
+          @if (p.isOnSale) { <span class="old">S/ {{ p.compareAtPrice | number: '1.2-2' }}</span> }
+          <div class="now">
+            <span class="price">S/ {{ p.price | number: '1.2-2' }}</span>
+            @if (p.isOnSale) { <span class="save">Ahorras S/ {{ (p.compareAtPrice! - p.price) | number: '1.2-2' }}</span> }
+          </div>
+          <span class="igv">Precio incluye IGV</span>
+        </div>
+
+        <div class="stock-line" [class.out]="!p.isInStock">
+          <i class="pi" [class.pi-check-circle]="p.isInStock" [class.pi-times-circle]="!p.isInStock"></i>
+          {{ p.isInStock ? 'En stock (' + p.availableStock + ' disponibles)' : 'Sin stock' }}
+        </div>
+
+        <div class="buy">
+          <div class="qty">
+            <button (click)="changeQty(-1)" [disabled]="qty() <= 1"><i class="pi pi-minus"></i></button>
+            <span>{{ qty() }}</span>
+            <button (click)="changeQty(1)" [disabled]="qty() >= p.availableStock && !p.allowBackorder"><i class="pi pi-plus"></i></button>
+          </div>
+          <button class="btn-add" [class.added]="added()" [disabled]="adding() || !p.isInStock" (click)="addToCart()">
+            @if (added()) { <i class="pi pi-check"></i> ¡Agregado! }
+            @else if (adding()) { <i class="pi pi-spin pi-spinner"></i> }
+            @else { <i class="pi pi-shopping-cart"></i> Agregar al carrito }
+          </button>
+          <button class="btn-buy" [disabled]="!p.isInStock" (click)="buyNow()">Comprar ahora</button>
+        </div>
+
+        <div class="perks">
+          <div><i class="pi pi-shield"></i> Garantía {{ p.warrantyMonths }} meses</div>
+          <div><i class="pi pi-truck"></i> Envío a todo el Perú</div>
+          <div><i class="pi pi-lock"></i> Pago 100% seguro</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Descripción + specs -->
+    <div class="pd-detail">
+      @if (p.description) {
+        <section class="block">
+          <h2 class="ax-section-title">Descripción</h2>
+          <p class="desc">{{ p.description }}</p>
+        </section>
+      }
+      @if (specGroups().length) {
+        <section class="block">
+          <h2 class="ax-section-title">Especificaciones técnicas</h2>
+          <div class="specs">
+            @for (g of specGroups(); track g.group) {
+              <div class="spec-group">
+                <h4>{{ g.group }}</h4>
+                <table>
+                  @for (s of g.items; track s.name) {
+                    <tr><td>{{ s.name }}</td><td>{{ s.value }}</td></tr>
+                  }
+                </table>
+              </div>
+            }
+          </div>
+        </section>
+      }
+    </div>
+  </div>
+}

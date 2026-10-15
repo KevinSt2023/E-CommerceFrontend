@@ -1,0 +1,150 @@
+<div class="page">
+  <div class="page-head">
+    <div>
+      <h1>Configuración del negocio</h1>
+      <p class="sub">Datos de la tienda, envíos, impuestos, métodos de pago y facturación electrónica.</p>
+    </div>
+    <button class="btn btn-primary" (click)="save()" [disabled]="saving() || loading()">
+      <i class="pi" [class.pi-save]="!saving()" [class.pi-spin]="saving()" [class.pi-spinner]="saving()"></i>
+      {{ saving() ? 'Guardando…' : 'Guardar cambios' }}
+    </button>
+  </div>
+
+  @if (msg()) { <div class="alert ok"><i class="pi pi-check-circle"></i> {{ msg() }}</div> }
+  @if (err()) { <div class="alert bad"><i class="pi pi-exclamation-triangle"></i> {{ err() }}</div> }
+
+  @if (loading()) {
+    <div class="card loading"><i class="pi pi-spin pi-spinner"></i> Cargando configuración…</div>
+  } @else {
+    <div class="tabs">
+      @for (t of tabs; track t.id) {
+        <button class="tab" [class.active]="tab() === t.id" (click)="tab.set(t.id)">
+          <i [class]="t.icon"></i> {{ t.label }}
+        </button>
+      }
+    </div>
+
+    <div class="card body">
+      <!-- NEGOCIO -->
+      @if (tab() === 'negocio') {
+        <div class="grid">
+          <div class="field col-2"><label>Nombre comercial *</label><input class="inp" [(ngModel)]="model.storeName" maxlength="150" /></div>
+          <div class="field col-2"><label>Eslogan</label><input class="inp" [(ngModel)]="model.slogan" maxlength="150" placeholder="Tu tienda online" /></div>
+          <div class="field"><label>Razón social</label><input class="inp" [(ngModel)]="model.legalName" maxlength="200" placeholder="ALTEXA S.A.C." /></div>
+          <div class="field"><label>RUC</label><input class="inp" [(ngModel)]="model.ruc" maxlength="11" placeholder="20600000001" /></div>
+          <div class="field"><label>Correo</label><input class="inp" type="email" [(ngModel)]="model.email" placeholder="ventas@altexa.pe" /></div>
+          <div class="field"><label>Teléfono</label><input class="inp" [(ngModel)]="model.phone" placeholder="(01) 500-1234" /></div>
+          <div class="field"><label>WhatsApp</label><input class="inp" [(ngModel)]="model.whatsApp" placeholder="+51 999 888 777" /></div>
+          <div class="field col-2">
+            <label>Logo de la marca</label>
+            <div class="logo-up">
+              <div class="logo-prev">
+                @if (model.logoUrl) { <img [src]="model.logoUrl" alt="Logo" /> } @else { <i class="pi pi-image"></i> }
+              </div>
+              <div class="logo-ctrls">
+                <input #logoInput type="file" accept="image/png,image/jpeg,image/webp,image/avif" hidden (change)="onLogoSelected($event)" />
+                <button type="button" class="btn btn-sm" (click)="logoInput.click()" [disabled]="uploadingLogo()">
+                  <i class="pi" [class.pi-upload]="!uploadingLogo()" [class.pi-spin]="uploadingLogo()" [class.pi-spinner]="uploadingLogo()"></i>
+                  {{ uploadingLogo() ? 'Subiendo…' : 'Subir desde PC' }}
+                </button>
+                @if (model.logoUrl) { <button type="button" class="btn btn-sm ghost" (click)="removeLogo()"><i class="pi pi-trash"></i> Quitar</button> }
+                <input class="inp url" [(ngModel)]="model.logoUrl" placeholder="o pega una URL: https://…" />
+                <span class="hint">PNG/JPG/WEBP, máx. 5 MB. Aparece en la tienda y en los comprobantes.</span>
+              </div>
+            </div>
+          </div>
+          <div class="field col-2"><label>Dirección</label><input class="inp" [(ngModel)]="model.addressLine" maxlength="250" placeholder="Av. Tecnología 123" /></div>
+          <div class="field"><label>Distrito</label><input class="inp" [(ngModel)]="model.district" placeholder="San Isidro" /></div>
+          <div class="field"><label>Provincia</label><input class="inp" [(ngModel)]="model.province" placeholder="Lima" /></div>
+          <div class="field"><label>Departamento</label><input class="inp" [(ngModel)]="model.department" placeholder="Lima" /></div>
+        </div>
+      }
+
+      <!-- COMERCIO / ENVÍOS -->
+      @if (tab() === 'comercio') {
+        <div class="grid">
+          <div class="field">
+            <label>Moneda</label>
+            <select class="inp" [(ngModel)]="model.currency">
+              <option value="PEN">Soles (PEN)</option>
+              <option value="USD">Dólares (USD)</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>IGV (%)</label>
+            <input class="inp" type="number" min="0" max="100" step="0.1" [(ngModel)]="igvPercent" />
+            <span class="hint">Se aplica a los precios (Perú: 18%).</span>
+          </div>
+          <div class="field">
+            <label>Envío gratis desde (S/)</label>
+            <input class="inp" type="number" min="0" step="1" [(ngModel)]="model.freeShippingThreshold" />
+            <span class="hint">Pedidos iguales o mayores tienen envío gratis.</span>
+          </div>
+          <div class="field">
+            <label>Costo de envío (S/)</label>
+            <input class="inp" type="number" min="0" step="1" [(ngModel)]="model.defaultShippingCost" />
+            <span class="hint">Se cobra cuando no aplica el envío gratis.</span>
+          </div>
+        </div>
+      }
+
+      <!-- PAGOS -->
+      @if (tab() === 'pagos') {
+        <div class="toggles">
+          <label class="toggle">
+            <input type="checkbox" [(ngModel)]="model.payCardEnabled" />
+            <span class="tg-box"></span>
+            <span class="tg-txt"><strong>Tarjeta (Stripe)</strong><small>Pago en línea con tarjeta de crédito/débito.</small></span>
+          </label>
+          <label class="toggle">
+            <input type="checkbox" [(ngModel)]="model.payTransferEnabled" />
+            <span class="tg-box"></span>
+            <span class="tg-txt"><strong>Transferencia / depósito</strong><small>El cliente transfiere a la cuenta del negocio.</small></span>
+          </label>
+          <label class="toggle">
+            <input type="checkbox" [(ngModel)]="model.payCashOnDeliveryEnabled" />
+            <span class="tg-box"></span>
+            <span class="tg-txt"><strong>Contra entrega</strong><small>El cliente paga al recibir el pedido.</small></span>
+          </label>
+        </div>
+
+        @if (model.payTransferEnabled) {
+          <h3 class="sec">Datos para transferencia</h3>
+          <div class="grid">
+            <div class="field"><label>Banco</label><input class="inp" [(ngModel)]="model.bankName" placeholder="BCP" /></div>
+            <div class="field"><label>Titular</label><input class="inp" [(ngModel)]="model.bankAccountHolder" placeholder="ALTEXA S.A.C." /></div>
+            <div class="field"><label>N° de cuenta</label><input class="inp" [(ngModel)]="model.bankAccountNumber" placeholder="193-1234567-0-01" /></div>
+            <div class="field"><label>CCI</label><input class="inp" [(ngModel)]="model.bankCci" placeholder="00219300123456700158" /></div>
+          </div>
+        }
+      }
+
+      <!-- FACTURACIÓN -->
+      @if (tab() === 'facturacion') {
+        <div class="toggles">
+          <label class="toggle">
+            <input type="checkbox" [(ngModel)]="model.invoicingEnabled" />
+            <span class="tg-box"></span>
+            <span class="tg-txt"><strong>Facturación electrónica (Nubefac / SUNAT)</strong><small>Emite boletas y facturas electrónicas automáticamente.</small></span>
+          </label>
+        </div>
+        <div class="grid">
+          <div class="field col-2">
+            <label>Token de Nubefac</label>
+            <input class="inp" [(ngModel)]="model.nubefacToken" placeholder="Token de integración de Nubefac" [disabled]="!model.invoicingEnabled" />
+            <span class="hint">Requerido para activar la facturación electrónica. Dato sensible: no se muestra en la tienda.</span>
+          </div>
+          <div class="field"><label>Serie de Boleta</label><input class="inp" [(ngModel)]="model.boletaSeries" maxlength="10" placeholder="B001" /></div>
+          <div class="field"><label>Serie de Factura</label><input class="inp" [(ngModel)]="model.facturaSeries" maxlength="10" placeholder="F001" /></div>
+        </div>
+      }
+    </div>
+
+    <div class="foot">
+      <button class="btn btn-primary" (click)="save()" [disabled]="saving()">
+        <i class="pi" [class.pi-save]="!saving()" [class.pi-spin]="saving()" [class.pi-spinner]="saving()"></i>
+        {{ saving() ? 'Guardando…' : 'Guardar cambios' }}
+      </button>
+    </div>
+  }
+</div>

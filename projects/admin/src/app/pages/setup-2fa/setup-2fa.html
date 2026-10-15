@@ -1,0 +1,44 @@
+<div class="wrap">
+  <div class="card box">
+    <div class="head">
+      <span class="ax-wordmark">ALTE<span class="ax-x">X</span>A</span>
+      <span class="req">2FA obligatorio</span>
+    </div>
+
+    @if (errorMsg()) { <p class="err"><i class="pi pi-exclamation-triangle"></i> {{ errorMsg() }}</p> }
+
+    @switch (step()) {
+      @case ('intro') {
+        <div class="intro">
+          <div class="shield"><i class="pi pi-shield"></i></div>
+          <h2>Protege tu cuenta de administrador</h2>
+          <p>Por seguridad de los datos de clientes y ventas, las cuentas de administrador y vendedor deben activar la verificación en dos pasos.</p>
+          <button class="btn btn-primary full" [disabled]="busy()" (click)="start()">
+            @if (busy()) { <i class="pi pi-spin pi-spinner"></i> } @else { Comenzar }
+          </button>
+          <button class="link" (click)="logout()">Cerrar sesión</button>
+        </div>
+      }
+      @case ('scan') {
+        <div class="scan">
+          <p class="step-text">1. Escanea el QR con <strong>Google Authenticator</strong> o <strong>Authy</strong>.</p>
+          @if (qr()) { <img class="qr" [src]="qr()" alt="QR 2FA" /> }
+          <div class="manual"><span>¿No puedes escanear? Clave manual:</span><code>{{ secret() }}</code></div>
+          <p class="step-text">2. Ingresa el código de 6 dígitos:</p>
+          <input class="inp code" [(ngModel)]="code" inputmode="numeric" maxlength="6" placeholder="123456" />
+          <button class="btn btn-primary full" [disabled]="busy()" (click)="confirm()">
+            @if (busy()) { <i class="pi pi-spin pi-spinner"></i> } @else { Activar 2FA }
+          </button>
+        </div>
+      }
+      @case ('recovery') {
+        <div class="recovery">
+          <div class="ok"><i class="pi pi-check-circle"></i><h2>¡2FA activado!</h2></div>
+          <p>Guarda estos <strong>códigos de recuperación</strong> en un lugar seguro. Cada uno se usa una sola vez.</p>
+          <div class="codes">@for (c of recoveryCodes(); track c) { <span>{{ c }}</span> }</div>
+          <button class="btn btn-primary full" (click)="finish()">Continuar al panel</button>
+        </div>
+      }
+    }
+  </div>
+</div>

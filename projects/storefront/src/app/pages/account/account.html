@@ -1,0 +1,72 @@
+<div class="ax-container acct">
+  <div class="acct-head">
+    <div class="avatar">{{ (user()?.fullName || 'U').charAt(0) }}</div>
+    <div>
+      <h1>Hola, {{ user()?.fullName }}</h1>
+      <p>{{ user()?.email }}</p>
+    </div>
+    <button class="logout" (click)="logout()"><i class="pi pi-sign-out"></i> Cerrar sesión</button>
+  </div>
+
+  <div class="acct-grid">
+    <aside class="nav">
+      <button [class.active]="section() === 'orders'" (click)="section.set('orders')"><i class="pi pi-box"></i> Mis pedidos</button>
+      <button [class.active]="section() === 'profile'" (click)="section.set('profile')"><i class="pi pi-user"></i> Mis datos</button>
+      <button [class.active]="section() === 'security'" (click)="section.set('security')"><i class="pi pi-shield"></i> Seguridad</button>
+    </aside>
+
+    <section class="content">
+      @switch (section()) {
+        @case ('orders') {
+          <h2>Mis pedidos</h2>
+          @if (loadingOrders()) {
+            <div class="loading"><i class="pi pi-spin pi-spinner"></i> Cargando...</div>
+          } @else if (!myOrders().length) {
+            <div class="empty"><i class="pi pi-box"></i><p>Aún no tienes pedidos.</p><a routerLink="/catalogo" class="btn">Explorar productos</a></div>
+          } @else {
+            <div class="orders">
+              @for (o of myOrders(); track o.id) {
+                <a class="order" [routerLink]="['/pedido', o.orderNumber]">
+                  <div class="o-main">
+                    <strong>{{ o.orderNumber }}</strong>
+                    <span class="o-date">{{ o.createdAtUtc | date: 'dd MMM yyyy' }}</span>
+                  </div>
+                  <span class="o-items">{{ o.itemCount }} ítem(s)</span>
+                  <span class="o-status" [attr.data-s]="o.status">{{ statusLabel(o.status) }}</span>
+                  <span class="o-total">S/ {{ o.total | number: '1.2-2' }}</span>
+                  <i class="pi pi-chevron-right"></i>
+                </a>
+              }
+            </div>
+          }
+        }
+        @case ('profile') {
+          <h2>Mis datos</h2>
+          @if (profile(); as p) {
+            <div class="profile">
+              <div class="p-row"><span>Nombres</span><strong>{{ p.firstName }}</strong></div>
+              <div class="p-row"><span>Apellidos</span><strong>{{ p.lastName }}</strong></div>
+              <div class="p-row"><span>Correo</span><strong>{{ p.email }}</strong></div>
+              <div class="p-row"><span>Teléfono</span><strong>{{ p.phoneNumber || '—' }}</strong></div>
+              <div class="p-row"><span>Documento</span><strong>{{ p.documentType }} {{ p.documentNumber || '—' }}</strong></div>
+            </div>
+          }
+        }
+        @case ('security') {
+          <h2>Seguridad</h2>
+          <div class="sec">
+            <div class="sec-item ok">
+              <i class="pi pi-check-circle"></i>
+              <div><strong>Contraseña protegida</strong><span>Guardada con hashing BCrypt. Nunca en texto plano.</span></div>
+            </div>
+            <div class="sec-item ok">
+              <i class="pi pi-check-circle"></i>
+              <div><strong>Sesión segura</strong><span>Tu sesión usa cookie HttpOnly + token de corta duración (inmune a robo por scripts).</span></div>
+            </div>
+            <ax-two-factor [enabled]="profile()?.twoFactorEnabled ?? false" (changed)="loadProfile()" />
+          </div>
+        }
+      }
+    </section>
+  </div>
+</div>

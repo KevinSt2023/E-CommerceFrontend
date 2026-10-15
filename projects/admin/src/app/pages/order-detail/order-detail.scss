@@ -1,0 +1,46 @@
+.back { display: inline-flex; align-items: center; gap: 8px; color: var(--ax-text-dim); font-size: 0.85rem; margin-bottom: 16px; }
+.back:hover { color: var(--ax-red); }
+.loading { padding: 60px; text-align: center; color: var(--ax-text-dim); }
+.loading i { margin-right: 8px; }
+
+.od-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
+.od-head h1 { font-size: 1.5rem; }
+.od-head .sub { color: var(--ax-text-dim); font-size: 0.85rem; }
+.badges { display: flex; gap: 8px; }
+
+.msg { font-size: 0.85rem; color: var(--ax-blue); background: rgba(80, 160, 255, 0.1); border: 1px solid rgba(80, 160, 255, 0.3); border-radius: 10px; padding: 11px 14px; margin-bottom: 16px; }
+.msg i { margin-right: 6px; }
+
+.od-grid { display: grid; grid-template-columns: 1fr 320px; gap: 16px; align-items: start; }
+.od-main { display: flex; flex-direction: column; gap: 16px; }
+.od-side { display: flex; flex-direction: column; gap: 16px; }
+.panel { padding: 20px; }
+.panel h3 { font-size: 1rem; margin-bottom: 16px; }
+
+.right { text-align: right; }
+.bold { font-weight: 800; }
+.muted { color: var(--ax-text-muted); font-size: 0.8rem; }
+
+.totals { margin-top: 16px; border-top: 1px solid var(--ax-border); padding-top: 14px; }
+.t-row { display: flex; justify-content: space-between; padding: 5px 0; font-size: 0.88rem; }
+.t-row.muted { color: var(--ax-text-muted); font-size: 0.8rem; }
+.t-row.disc { color: var(--ax-green); }
+.t-row.total { font-size: 1.15rem; font-weight: 800; border-top: 1px solid var(--ax-border); margin-top: 6px; padding-top: 12px; }
+
+.actions { display: flex; flex-direction: column; gap: 14px; }
+.act-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.act-lbl { font-size: 0.82rem; color: var(--ax-text-dim); }
+.inp.sm { width: auto; min-width: 180px; padding: 9px 12px; }
+.btn.danger { color: #ff6b6b; border-color: rgba(255, 30, 45, 0.3); }
+.btn.danger:hover { border-color: var(--ax-red); }
+.no-act { color: var(--ax-text-muted); font-size: 0.85rem; }
+
+.kv { display: flex; justify-content: space-between; gap: 10px; padding: 7px 0; font-size: 0.85rem; border-bottom: 1px solid var(--ax-border-soft); }
+.kv span { color: var(--ax-text-muted); }
+.kv strong { text-align: right; }
+.addr, .doc { font-size: 0.86rem; color: var(--ax-text-dim); line-height: 1.6; }
+.doc.dim { color: var(--ax-text-muted); font-size: 0.8rem; margin-top: 4px; }
+.print-row { display: flex; gap: 8px; margin-top: 12px; }
+.print-row .btn { flex: 1; justify-content: center; }
+
+@media (max-width: 900px) { .od-grid { grid-template-columns: 1fr; } }

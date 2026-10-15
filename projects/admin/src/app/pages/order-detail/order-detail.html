@@ -1,0 +1,103 @@
+<a routerLink="/pedidos" class="back"><i class="pi pi-arrow-left"></i> Volver a pedidos</a>
+
+@if (loading()) {
+  <div class="loading"><i class="pi pi-spin pi-spinner"></i> Cargando pedido...</div>
+} @else if (order(); as o) {
+  <div class="od-head">
+    <div>
+      <h1>{{ o.orderNumber }}</h1>
+      <span class="sub">{{ o.createdAtUtc | date: 'dd MMM yyyy, HH:mm' }}</span>
+    </div>
+    <div class="badges">
+      <span class="badge" [class]="statusClass(o.status)">{{ statusLabel(o.status) }}</span>
+      <span class="badge" [class]="statusClass(o.paymentStatus)">Pago: {{ statusLabel(o.paymentStatus) }}</span>
+    </div>
+  </div>
+
+  @if (msg()) { <p class="msg"><i class="pi pi-info-circle"></i> {{ msg() }}</p> }
+
+  <div class="od-grid">
+    <div class="od-main">
+      <div class="card panel">
+        <h3>Productos</h3>
+        <table class="tbl">
+          <thead><tr><th>Producto</th><th>SKU</th><th class="right">Cant.</th><th class="right">P. Unit</th><th class="right">Total</th></tr></thead>
+          <tbody>
+            @for (it of o.items; track it.productId) {
+              <tr><td>{{ it.productName }}</td><td class="muted">{{ it.sku }}</td><td class="right">{{ it.quantity }}</td>
+              <td class="right">S/ {{ it.unitPrice | number: '1.2-2' }}</td><td class="right bold">S/ {{ it.lineTotal | number: '1.2-2' }}</td></tr>
+            }
+          </tbody>
+        </table>
+        <div class="totals">
+          <div class="t-row"><span>Subtotal</span><span>S/ {{ o.subtotal | number: '1.2-2' }}</span></div>
+          @if (o.discountAmount > 0) { <div class="t-row disc"><span>Descuento {{ o.couponCode ? '(' + o.couponCode + ')' : '' }}</span><span>- S/ {{ o.discountAmount | number: '1.2-2' }}</span></div> }
+          <div class="t-row"><span>Envío</span><span>{{ o.shippingCost === 0 ? 'Gratis' : 'S/ ' + (o.shippingCost | number: '1.2-2') }}</span></div>
+          <div class="t-row muted"><span>IGV incluido</span><span>S/ {{ o.taxAmount | number: '1.2-2' }}</span></div>
+          <div class="t-row total"><span>Total</span><span>S/ {{ o.total | number: '1.2-2' }}</span></div>
+        </div>
+      </div>
+
+      <!-- Acciones -->
+      <div class="card panel">
+        <h3>Acciones</h3>
+        <div class="actions">
+          @if (canConfirmPay()) {
+            <div class="act-row">
+              <select class="inp sm" [(ngModel)]="payMethod">
+                <option value="Stripe">Tarjeta (Stripe)</option>
+                <option value="BankTransfer">Transferencia</option>
+                <option value="CashOnDelivery">Contra entrega</option>
+                <option value="Culqi">Culqi</option>
+                <option value="MercadoPago">MercadoPago</option>
+              </select>
+              <button class="btn btn-primary" [disabled]="busy()" (click)="confirmPay()"><i class="pi pi-check"></i> Confirmar pago</button>
+            </div>
+          }
+          @if (canAdvance()) {
+            <div class="act-row">
+              <span class="act-lbl">Avanzar estado:</span>
+              <button class="btn btn-ghost btn-sm" [disabled]="busy() || o.status === 'Processing'" (click)="advance('Processing')">Preparando</button>
+              <button class="btn btn-ghost btn-sm" [disabled]="busy() || o.status === 'Shipped'" (click)="advance('Shipped')">Enviado</button>
+              <button class="btn btn-ghost btn-sm" [disabled]="busy()" (click)="advance('Delivered')">Entregado</button>
+            </div>
+          }
+          @if (canCancel()) {
+            <div class="act-row">
+              <input class="inp sm" [(ngModel)]="cancelReason" placeholder="Motivo de cancelación (opcional)" />
+              <button class="btn btn-ghost danger" [disabled]="busy()" (click)="cancel()"><i class="pi pi-times"></i> Cancelar pedido</button>
+            </div>
+          }
+          @if (!canConfirmPay() && !canAdvance() && !canCancel()) {
+            <p class="no-act">No hay acciones disponibles para este pedido.</p>
+          }
+        </div>
+      </div>
+    </div>
+
+    <aside class="od-side">
+      <div class="card panel">
+        <h3>Cliente</h3>
+        <p class="kv"><span>Nombre</span><strong>{{ o.customerName }}</strong></p>
+        <p class="kv"><span>Correo</span><strong>{{ o.customerEmail }}</strong></p>
+        <p class="kv"><span>Teléfono</span><strong>{{ o.customerPhone }}</strong></p>
+        <p class="kv"><span>Documento</span><strong>{{ o.customerDocumentType }} {{ o.customerDocumentNumber || '—' }}</strong></p>
+        <p class="kv"><span>Método pago</span><strong>{{ o.paymentMethod }}</strong></p>
+      </div>
+      <div class="card panel">
+        <h3>Envío</h3>
+        <p class="addr">{{ o.shippingRecipient }}<br />{{ o.shippingLine1 }}@if (o.shippingLine2) {, {{ o.shippingLine2 }}}<br />{{ o.shippingDistrict }}, {{ o.shippingProvince }}<br />{{ o.shippingDepartment }}</p>
+      </div>
+      <div class="card panel">
+        <h3>Comprobante</h3>
+        <p class="doc">{{ o.requestedDocument }}</p>
+        @if (o.invoice) { <p class="doc dim">{{ o.invoice.documentType }} {{ o.invoice.fullNumber }} · {{ o.invoice.status }}</p> }
+        @else { <p class="doc dim">Documento fiscal se emite al confirmar el pago. Puedes imprimir una proforma.</p> }
+        <div class="print-row">
+          <a class="btn btn-ghost btn-sm" [routerLink]="['/pedidos', o.orderNumber, 'comprobante']" [queryParams]="{ fmt: 'ticket' }"><i class="pi pi-receipt"></i> Ticket</a>
+          <a class="btn btn-ghost btn-sm" [routerLink]="['/pedidos', o.orderNumber, 'comprobante']" [queryParams]="{ fmt: 'a4' }"><i class="pi pi-file"></i> A4 / PDF</a>
+        </div>
+      </div>
+    </aside>
+  </div>
+}

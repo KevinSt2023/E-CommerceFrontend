@@ -1,0 +1,42 @@
+<div class="login-wrap">
+  <div class="login-card card">
+    <div class="head">
+      <span class="ax-wordmark brand">ALTE<span class="ax-x">X</span>A</span>
+      <span class="sub">Panel de administración</span>
+    </div>
+
+    @if (errorMsg()) { <p class="err"><i class="pi pi-exclamation-triangle"></i> {{ errorMsg() }}</p> }
+
+    @if (!needs2fa()) {
+      <form [formGroup]="form" (ngSubmit)="submit()">
+        <label>Correo</label>
+        <div class="iw"><i class="pi pi-envelope"></i><input class="inp" type="email" formControlName="email" placeholder="admin@ecommerce.com" /></div>
+        <label>Contraseña</label>
+        <div class="iw">
+          <i class="pi pi-lock"></i>
+          <input class="inp" [type]="showPass() ? 'text' : 'password'" formControlName="password" placeholder="••••••••" />
+          <button type="button" class="eye" (click)="showPass.set(!showPass())"><i class="pi" [class.pi-eye]="!showPass()" [class.pi-eye-slash]="showPass()"></i></button>
+        </div>
+        <button class="btn btn-primary full" [disabled]="submitting()">
+          @if (submitting()) { <i class="pi pi-spin pi-spinner"></i> } @else { <i class="pi pi-sign-in"></i> Ingresar }
+        </button>
+      </form>
+    } @else {
+      <form [formGroup]="twoFaForm" (ngSubmit)="submitTwoFa()" class="twofa">
+        <div class="tf-icon"><i class="pi pi-shield"></i></div>
+        <p class="tf-text">Ingresa el código de 6 dígitos de tu app de autenticación.</p>
+        <input class="inp code" formControlName="code" inputmode="numeric" autocomplete="one-time-code" maxlength="9" placeholder="123456" />
+        <button class="btn btn-primary full" [disabled]="submitting()">
+          @if (submitting()) { <i class="pi pi-spin pi-spinner"></i> } @else { <i class="pi pi-check"></i> Verificar }
+        </button>
+      </form>
+    }
+
+    @if (googleEnabled && !needs2fa()) {
+      <div class="divider"><span>o</span></div>
+      <div class="google-btn" #googleBtn></div>
+    }
+
+    <p class="note"><i class="pi pi-shield"></i> Acceso restringido. Sesión con 2FA y cifrado.</p>
+  </div>
+</div>

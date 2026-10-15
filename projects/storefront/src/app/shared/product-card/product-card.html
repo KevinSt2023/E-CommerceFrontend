@@ -1,0 +1,58 @@
+<a class="card" [routerLink]="['/producto', product().slug]">
+  <div class="media">
+    @if (product().isOnSale) {
+      <span class="badge-sale">-{{ product().discountPercentage }}%</span>
+    }
+    @if (product().isFeatured) {
+      <span class="badge-feat"><i class="pi pi-star-fill"></i></span>
+    }
+    @if (product().primaryImageUrl) {
+      <img [src]="product().primaryImageUrl" [alt]="product().name" loading="lazy" />
+    } @else {
+      <div class="media-placeholder"><i class="pi pi-image"></i></div>
+    }
+    <span class="view-hint"><i class="pi pi-eye"></i> Ver detalle</span>
+  </div>
+
+  <div class="body">
+    <span class="brand">{{ product().brandName || product().categoryName }}</span>
+    <h3 class="name">{{ product().name }}</h3>
+
+    <div class="rating">
+      <i class="pi pi-star-fill"></i>
+      <span>{{ product().ratingAverage | number: '1.1-1' }}</span>
+      <span class="rating-count">({{ product().ratingCount }})</span>
+      @if (product().warrantyMonths > 0) {
+        <span class="warranty"><i class="pi pi-shield"></i> {{ product().warrantyMonths }}m</span>
+      }
+    </div>
+
+    <div class="price-row">
+      <div class="prices">
+        @if (product().isOnSale) {
+          <span class="old">S/ {{ product().compareAtPrice | number: '1.2-2' }}</span>
+        }
+        <span class="price">S/ {{ product().price | number: '1.2-2' }}</span>
+      </div>
+      <button
+        class="add"
+        [class.added]="added()"
+        [disabled]="adding() || !product().isInStock"
+        (click)="add($event)"
+        [attr.aria-label]="'Agregar ' + product().name"
+      >
+        @if (added()) {
+          <i class="pi pi-check"></i>
+        } @else if (adding()) {
+          <i class="pi pi-spin pi-spinner"></i>
+        } @else {
+          <i class="pi pi-shopping-cart"></i>
+        }
+      </button>
+    </div>
+
+    @if (!product().isInStock) {
+      <span class="stock-out">Sin stock</span>
+    }
+  </div>
+</a>

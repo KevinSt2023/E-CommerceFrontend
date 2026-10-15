@@ -1,0 +1,97 @@
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-grid ax-grid-bg"></div>
+  <div class="hero-blob blob-1"></div>
+  <div class="hero-blob blob-2"></div>
+  <div class="ax-container hero-inner">
+    <div class="hero-copy">
+      <span class="ax-chip hero-chip"><i class="pi pi-bolt"></i> Nueva temporada gamer</span>
+      <h1 class="hero-title ax-display">
+        ARMA TU <span class="grad-red">SETUP</span><br />
+        DE <span class="grad-metal">ALTO IMPACTO</span>
+      </h1>
+      <p class="hero-sub">
+        Laptops, tarjetas de video, componentes y periféricos de las mejores marcas.
+        Rendimiento real, precios reales.
+      </p>
+      <div class="hero-cta">
+        <a routerLink="/catalogo" class="btn-primary"><i class="pi pi-shopping-bag"></i> Ver catálogo</a>
+        <a [routerLink]="['/catalogo']" [queryParams]="{ ofertas: true }" class="btn-ghost">
+          <i class="pi pi-tag"></i> Ofertas del día
+        </a>
+      </div>
+      <div class="hero-stats">
+        @for (s of heroStats; track s.label) {
+          <div class="stat"><i [class]="s.icon"></i> {{ s.label }}</div>
+        }
+      </div>
+    </div>
+    <div class="hero-art">
+      <div class="glow"></div>
+      <div class="hero-badge ax-display">A</div>
+      <div class="hero-float ax-glass">
+        <span class="hf-tag"><i class="pi pi-bolt"></i> Build gamer</span>
+        <div class="hf-row"><span>RTX · Ryzen · Intel</span><i class="pi pi-microchip"></i></div>
+        <div class="hf-meter"><span></span></div>
+        <div class="hf-foot"><i class="pi pi-shield"></i> Garantía oficial hasta 36 meses</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CATEGORÍAS -->
+<section class="ax-section ax-container">
+  <h2 class="ax-section-title">Explora por categoría</h2>
+  <div class="cats ax-reveal">
+    @for (c of categories(); track c.id) {
+      <a class="cat-tile" [routerLink]="['/catalogo']" [queryParams]="{ categoria: c.slug }">
+        <span class="cat-ico"><i class="pi" [class]="c.iconName || 'pi-tag'"></i></span>
+        <span class="cat-name">{{ c.name }}</span>
+      </a>
+    }
+  </div>
+</section>
+
+<!-- PROMO STRIP -->
+<section class="ax-container">
+  <div class="promo">
+    <div class="promo-item"><i class="pi pi-truck"></i><div><strong>Envío gratis</strong><span>desde S/ {{ settings.freeShippingThreshold() | number: '1.0-0' }}</span></div></div>
+    <div class="promo-item"><i class="pi pi-shield"></i><div><strong>Garantía oficial</strong><span>hasta 36 meses</span></div></div>
+    <div class="promo-item"><i class="pi pi-sync"></i><div><strong>Cambios</strong><span>7 días</span></div></div>
+    <div class="promo-item"><i class="pi pi-headphones"></i><div><strong>Soporte</strong><span>especializado</span></div></div>
+  </div>
+</section>
+
+<!-- DESTACADOS -->
+<section class="ax-section ax-container">
+  <div class="row-head">
+    <h2 class="ax-section-title">Destacados</h2>
+    <a routerLink="/catalogo" class="see-all">Ver todo <i class="pi pi-arrow-right"></i></a>
+  </div>
+  @if (loading()) {
+    <div class="grid">
+      @for (i of [1,2,3,4]; track i) { <div class="skeleton"></div> }
+    </div>
+  } @else {
+    <div class="grid ax-reveal">
+      @for (p of featured(); track p.id) {
+        <ax-product-card [product]="p" />
+      }
+    </div>
+  }
+</section>
+
+<!-- OFERTAS -->
+@if (onSale().length) {
+  <section class="ax-section ax-container">
+    <div class="row-head">
+      <h2 class="ax-section-title"><i class="pi pi-bolt" style="color: var(--ax-red)"></i> Ofertas destacadas</h2>
+      <a [routerLink]="['/catalogo']" [queryParams]="{ ofertas: true }" class="see-all">Ver ofertas <i class="pi pi-arrow-right"></i></a>
+    </div>
+    <div class="grid ax-reveal">
+      @for (p of onSale(); track p.id) {
+        <ax-product-card [product]="p" />
+      }
+    </div>
+  </section>
+}

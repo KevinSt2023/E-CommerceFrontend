@@ -1,0 +1,138 @@
+<div class="wrap">
+  <!-- Barra de herramientas (no se imprime) -->
+  <div class="toolbar no-print">
+    <a [routerLink]="['/pedidos', orderNumber]" class="back"><i class="pi pi-arrow-left"></i> Volver al pedido</a>
+    <div class="tools">
+      <div class="seg">
+        <button [class.active]="format() === 'ticket'" (click)="format.set('ticket')"><i class="pi pi-receipt"></i> Ticket 80mm</button>
+        <button [class.active]="format() === 'a4'" (click)="format.set('a4')"><i class="pi pi-file"></i> A4</button>
+      </div>
+      <button class="btn btn-primary" (click)="print(format())"><i class="pi pi-print"></i> Imprimir / Guardar PDF</button>
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="state no-print"><i class="pi pi-spin pi-spinner"></i> Cargando comprobante…</div>
+  } @else if (order(); as o) {
+    @if (store(); as s) {
+
+      <!-- ===================== TICKET 80mm ===================== -->
+      @if (format() === 'ticket') {
+        <div class="ax-print-area ticket">
+          <div class="tk-head">
+            @if (s.logoUrl) { <img class="tk-logo" [src]="s.logoUrl" alt="logo" /> }
+            <strong class="tk-name">{{ s.legalName || s.storeName }}</strong>
+            @if (s.ruc) { <span>RUC {{ s.ruc }}</span> }
+            @if (s.addressLine) { <span>{{ s.addressLine }}</span> }
+            <span>{{ s.district }}{{ s.district && s.department ? ' - ' : '' }}{{ s.department }}</span>
+            @if (s.phone) { <span>Tel. {{ s.phone }}</span> }
+          </div>
+
+          <div class="tk-doc">
+            <strong>{{ docTitle() }}</strong>
+            @if (docNumber()) { <span class="tk-num">{{ docNumber() }}</span> }
+            @else { <span class="tk-num proforma">PROFORMA · {{ o.orderNumber }}</span> }
+          </div>
+
+          <div class="tk-meta">
+            <div><span>Fecha</span><span>{{ (o.paidAtUtc || o.createdAtUtc) | date: 'dd/MM/yyyy HH:mm' }}</span></div>
+            <div><span>Cliente</span><span>{{ o.customerName }}</span></div>
+            <div><span>{{ docType(o.customerDocumentType) }}</span><span>{{ o.customerDocumentNumber || '—' }}</span></div>
+            <div><span>Pago</span><span>{{ payLabel(o.paymentMethod) }}</span></div>
+          </div>
+
+          <div class="tk-items">
+            <div class="tk-ir tk-h"><span>Cant/Desc</span><span>Importe</span></div>
+            @for (it of o.items; track it.productId) {
+              <div class="tk-it">
+                <div class="tk-it-top"><span>{{ it.quantity }} x {{ it.unitPrice | number: '1.2-2' }}</span><span>{{ it.lineTotal | number: '1.2-2' }}</span></div>
+                <div class="tk-it-name">{{ it.productName }}</div>
+              </div>
+            }
+          </div>
+
+          <div class="tk-tot">
+            <div><span>Op. Gravada</span><span>S/ {{ taxable() | number: '1.2-2' }}</span></div>
+            <div><span>IGV ({{ igvPercent() }}%)</span><span>S/ {{ igvAmount() | number: '1.2-2' }}</span></div>
+            @if (o.discountAmount > 0) { <div><span>Descuento</span><span>- S/ {{ o.discountAmount | number: '1.2-2' }}</span></div> }
+            <div><span>Envío</span><span>{{ o.shippingCost === 0 ? 'Gratis' : 'S/ ' + (o.shippingCost | number: '1.2-2') }}</span></div>
+            <div class="tk-grand"><span>TOTAL</span><span>S/ {{ o.total | number: '1.2-2' }}</span></div>
+          </div>
+
+          <div class="tk-foot">
+            <span>¡Gracias por su compra!</span>
+            @if (isFiscal()) { <span>Representación impresa del comprobante electrónico.</span> }
+            @else { <span class="proforma">Documento no fiscal — se emitirá al confirmar el pago.</span> }
+            @if (s.whatsApp) { <span>WhatsApp {{ s.whatsApp }}</span> }
+          </div>
+        </div>
+      }
+
+      <!-- ===================== A4 ===================== -->
+      @if (format() === 'a4') {
+        <div class="ax-print-area a4">
+          <header class="a4-head">
+            <div class="a4-brand">
+              @if (s.logoUrl) { <img class="a4-logo" [src]="s.logoUrl" alt="logo" /> }
+              <div>
+                <strong>{{ s.legalName || s.storeName }}</strong>
+                @if (s.slogan) { <span class="a4-slogan">{{ s.slogan }}</span> }
+                @if (s.addressLine) { <span>{{ s.addressLine }}, {{ s.district }}, {{ s.department }}</span> }
+                @if (s.phone || s.email) { <span>{{ s.phone }}{{ s.phone && s.email ? ' · ' : '' }}{{ s.email }}</span> }
+              </div>
+            </div>
+            <div class="a4-doc">
+              @if (s.ruc) { <span class="a4-ruc">RUC {{ s.ruc }}</span> }
+              <strong>{{ docTitle() }}</strong>
+              <span class="a4-num">{{ docNumber() || ('PROFORMA · ' + o.orderNumber) }}</span>
+            </div>
+          </header>
+
+          <section class="a4-party">
+            <div><span>Cliente:</span> <strong>{{ o.customerName }}</strong></div>
+            <div><span>{{ docType(o.customerDocumentType) }}:</span> {{ o.customerDocumentNumber || '—' }}</div>
+            <div><span>Fecha de emisión:</span> {{ (o.paidAtUtc || o.createdAtUtc) | date: 'dd/MM/yyyy HH:mm' }}</div>
+            <div><span>Dirección:</span> {{ o.shippingLine1 }}, {{ o.shippingDistrict }}, {{ o.shippingProvince }} - {{ o.shippingDepartment }}</div>
+            <div><span>Forma de pago:</span> {{ payLabel(o.paymentMethod) }}</div>
+            <div><span>Pedido:</span> {{ o.orderNumber }}</div>
+          </section>
+
+          <table class="a4-items">
+            <thead>
+              <tr><th class="c">Cant.</th><th>Descripción</th><th class="r">P. Unit.</th><th class="r">Importe</th></tr>
+            </thead>
+            <tbody>
+              @for (it of o.items; track it.productId) {
+                <tr>
+                  <td class="c">{{ it.quantity }}</td>
+                  <td><strong>{{ it.productName }}</strong><br /><small>SKU: {{ it.sku }}</small></td>
+                  <td class="r">{{ it.unitPrice | number: '1.2-2' }}</td>
+                  <td class="r">{{ it.lineTotal | number: '1.2-2' }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+
+          <div class="a4-bottom">
+            <div class="a4-legal">
+              @if (isFiscal()) { <p>Representación impresa de la {{ isFactura() ? 'factura' : 'boleta de venta' }} electrónica. Consulte su comprobante en el portal SUNAT.</p> }
+              @else { <p class="proforma">Documento NO fiscal (proforma). El comprobante electrónico se emite al confirmar el pago.</p> }
+              @if (s.bankName && o.paymentMethod === 'BankTransfer') {
+                <p>Pago por transferencia: {{ s.bankName }} · Cta {{ s.bankAccountNumber }}@if (s.bankCci) { · CCI {{ s.bankCci }}}</p>
+              }
+            </div>
+            <div class="a4-tot">
+              <div><span>Op. Gravada</span><span>S/ {{ taxable() | number: '1.2-2' }}</span></div>
+              <div><span>IGV ({{ igvPercent() }}%)</span><span>S/ {{ igvAmount() | number: '1.2-2' }}</span></div>
+              @if (o.discountAmount > 0) { <div><span>Descuento</span><span>- S/ {{ o.discountAmount | number: '1.2-2' }}</span></div> }
+              <div><span>Envío</span><span>{{ o.shippingCost === 0 ? 'Gratis' : 'S/ ' + (o.shippingCost | number: '1.2-2') }}</span></div>
+              <div class="a4-grand"><span>IMPORTE TOTAL</span><span>S/ {{ o.total | number: '1.2-2' }}</span></div>
+            </div>
+          </div>
+        </div>
+      }
+    }
+  } @else {
+    <div class="state no-print"><i class="pi pi-exclamation-triangle"></i> No se encontró el pedido.</div>
+  }
+</div>

@@ -1,0 +1,65 @@
+<div class="page-head"><div><h1>Usuarios</h1><span class="sub">{{ total() }} usuarios · gestiona roles y acceso</span></div></div>
+
+@if (msg()) { <p class="msg"><i class="pi pi-info-circle"></i> {{ msg() }}</p> }
+
+<div class="card toolbar">
+  <div class="search"><i class="pi pi-search"></i><input class="inp" [(ngModel)]="search" (keyup.enter)="applyFilters()" placeholder="Buscar por nombre o correo..." /></div>
+  <select class="inp role-sel" [(ngModel)]="roleFilter" (change)="applyFilters()">
+    <option value="">Todos los roles</option>
+    <option value="Customer">Clientes</option>
+    <option value="Staff">Vendedores</option>
+    <option value="Admin">Administradores</option>
+  </select>
+  <button class="btn btn-ghost btn-sm" (click)="applyFilters()">Buscar</button>
+</div>
+
+<div class="card">
+  @if (loading()) {
+    <div class="loading"><i class="pi pi-spin pi-spinner"></i> Cargando...</div>
+  } @else if (!users().length) {
+    <div class="empty"><i class="pi pi-users"></i><p>No hay usuarios con esos filtros.</p></div>
+  } @else {
+    <div class="tbl-wrap">
+      <table class="tbl">
+        <thead><tr><th>Usuario</th><th>Documento</th><th>2FA</th><th>Pedidos</th><th>Registro</th><th>Rol</th><th>Estado</th></tr></thead>
+        <tbody>
+          @for (u of users(); track u.id) {
+            <tr [class.inactive]="!u.isActive">
+              <td>
+                <div class="u-cell"><div class="u-av">{{ u.firstName.charAt(0) }}</div>
+                  <div><strong>{{ u.firstName }} {{ u.lastName }}</strong><span>{{ u.email }}</span></div>
+                </div>
+              </td>
+              <td class="muted">{{ u.documentType }} {{ u.documentNumber || '—' }}</td>
+              <td>@if (u.twoFactorEnabled) { <span class="badge badge-green">Activo</span> } @else { <span class="badge badge-gray">No</span> }</td>
+              <td>{{ u.ordersCount }}</td>
+              <td class="muted">{{ u.createdAtUtc | date: 'dd/MM/yy' }}</td>
+              <td>
+                @if (u.id === myId) {
+                  <span class="badge" [class]="roleClass(u.role)">{{ roleLabel(u.role) }} (tú)</span>
+                } @else {
+                  <select class="inp role-pick" [ngModel]="u.role" (ngModelChange)="changeRole(u, $event)">
+                    @for (r of roles; track r) { <option [value]="r">{{ roleLabel(r) }}</option> }
+                  </select>
+                }
+              </td>
+              <td>
+                @if (u.id === myId) { <span class="badge badge-green">Activo</span> }
+                @else {
+                  <button class="btn btn-sm" [class.btn-ghost]="u.isActive" [class.danger]="u.isActive" (click)="toggleActive(u)">
+                    {{ u.isActive ? 'Desactivar' : 'Activar' }}
+                  </button>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    <div class="pager">
+      <button class="btn btn-ghost btn-sm" [disabled]="page() <= 1" (click)="goPage(page() - 1)"><i class="pi pi-chevron-left"></i></button>
+      <span>Página {{ page() }} de {{ totalPages }}</span>
+      <button class="btn btn-ghost btn-sm" [disabled]="page() >= totalPages" (click)="goPage(page() + 1)"><i class="pi pi-chevron-right"></i></button>
+    </div>
+  }
+</div>

@@ -1,0 +1,54 @@
+<div class="ax-container cartp">
+  <h1 class="ax-section-title">Mi carrito</h1>
+
+  @if (!cart() || cart()!.items.length === 0) {
+    <div class="empty">
+      <i class="pi pi-shopping-cart"></i>
+      <p>Tu carrito está vacío.</p>
+      <a routerLink="/catalogo" class="btn-primary">Explorar productos</a>
+    </div>
+  } @else {
+    <div class="cart-grid">
+      <div class="items">
+        @for (it of cart()!.items; track it.productId) {
+          <div class="item" [class.issue]="it.issue">
+            <a class="thumb" [routerLink]="['/producto', it.slug]">
+              @if (it.primaryImageUrl) { <img [src]="it.primaryImageUrl" [alt]="it.name" /> }
+              @else { <i class="pi pi-image"></i> }
+            </a>
+            <div class="item-info">
+              <a class="item-name" [routerLink]="['/producto', it.slug]">{{ it.name }}</a>
+              <span class="item-sku">SKU: {{ it.sku }}</span>
+              @if (it.issue === 'stock_insuficiente') { <span class="warn"><i class="pi pi-exclamation-triangle"></i> Stock limitado: {{ it.availableStock }}</span> }
+              @if (it.issue === 'precio_actualizado') { <span class="warn"><i class="pi pi-info-circle"></i> Precio actualizado</span> }
+              @if (it.issue === 'no_disponible') { <span class="warn"><i class="pi pi-times-circle"></i> No disponible</span> }
+            </div>
+            <div class="item-qty">
+              <button (click)="dec(it.productId, it.quantity)" [disabled]="it.quantity <= 1"><i class="pi pi-minus"></i></button>
+              <span>{{ it.quantity }}</span>
+              <button (click)="inc(it.productId, it.quantity, it.availableStock)"><i class="pi pi-plus"></i></button>
+            </div>
+            <div class="item-price">
+              <span class="line">S/ {{ it.lineTotal | number: '1.2-2' }}</span>
+              <span class="unit">S/ {{ it.unitPrice | number: '1.2-2' }} c/u</span>
+            </div>
+            <button class="rm" (click)="remove(it.productId)" aria-label="Quitar"><i class="pi pi-trash"></i></button>
+          </div>
+        }
+        <button class="clear" (click)="clear()"><i class="pi pi-trash"></i> Vaciar carrito</button>
+      </div>
+
+      <aside class="summary">
+        <h3>Resumen</h3>
+        <div class="line"><span>Subtotal ({{ cart()!.itemCount }} ítems)</span><span>S/ {{ cart()!.subtotal | number: '1.2-2' }}</span></div>
+        <div class="line dim"><span>IGV incluido (18%)</span><span>S/ {{ cart()!.igvAmount | number: '1.2-2' }}</span></div>
+        <div class="line"><span>Envío</span><span>{{ shipping() === 0 ? 'Gratis' : 'S/ ' + (shipping() | number: '1.2-2') }}</span></div>
+        @if (shipping() > 0) { <p class="ship-hint"><i class="pi pi-truck"></i> Te faltan S/ {{ missingForFreeShipping() | number: '1.2-2' }} para envío gratis</p> }
+        <div class="line total"><span>Total</span><span>S/ {{ grandTotal() | number: '1.2-2' }}</span></div>
+
+        <a routerLink="/checkout" class="btn-primary checkout"><i class="pi pi-lock"></i> Finalizar compra</a>
+        <a routerLink="/catalogo" class="keep">← Seguir comprando</a>
+      </aside>
+    </div>
+  }
+</div>

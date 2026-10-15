@@ -1,0 +1,47 @@
+<div class="ax-container pay">
+  <div class="crumbs"><a routerLink="/carrito">Carrito</a> <i class="pi pi-angle-right"></i> <span>Pago</span></div>
+  <h1 class="ax-section-title"><i class="pi pi-credit-card"></i> Pago seguro</h1>
+
+  @if (loading()) {
+    <div class="state"><i class="pi pi-spin pi-spinner"></i> Preparando el pago seguro...</div>
+  } @else if (order()?.paymentStatus === 'Paid') {
+    <div class="state ok">
+      <i class="pi pi-check-circle"></i>
+      <p>Este pedido ya está pagado.</p>
+      <a [routerLink]="['/pedido', order()!.orderNumber]" class="btn-primary">Ver pedido</a>
+    </div>
+  } @else {
+    <div class="pay-grid">
+      <div class="pay-box">
+        <h3>Datos de la tarjeta</h3>
+        <div #payEl class="stripe-mount"></div>
+
+        @if (errorMsg()) { <p class="err"><i class="pi pi-exclamation-triangle"></i> {{ errorMsg() }}</p> }
+
+        <button class="btn-primary pay-btn" [disabled]="!ready() || processing()" (click)="pay()">
+          @if (processing()) { <i class="pi pi-spin pi-spinner"></i> Procesando... }
+          @else { <i class="pi pi-lock"></i> Pagar S/ {{ order()?.total | number: '1.2-2' }} }
+        </button>
+
+        <p class="safe"><i class="pi pi-shield"></i> Pago procesado y cifrado por Stripe. No almacenamos datos de tu tarjeta.</p>
+        <p class="test-hint">Modo prueba: usa la tarjeta <strong>4242 4242 4242 4242</strong>, fecha futura y cualquier CVC.</p>
+      </div>
+
+      @if (order(); as o) {
+        <aside class="summary">
+          <h3>Pedido {{ o.orderNumber }}</h3>
+          <div class="items">
+            @for (it of o.items; track it.productId) {
+              <div class="it"><span class="q">{{ it.quantity }}×</span><span class="n">{{ it.productName }}</span><span class="p">S/ {{ it.lineTotal | number: '1.2-2' }}</span></div>
+            }
+          </div>
+          <div class="line"><span>Subtotal</span><span>S/ {{ o.subtotal | number: '1.2-2' }}</span></div>
+          @if (o.discountAmount > 0) { <div class="line"><span>Descuento</span><span>- S/ {{ o.discountAmount | number: '1.2-2' }}</span></div> }
+          <div class="line"><span>Envío</span><span>{{ o.shippingCost === 0 ? 'Gratis' : 'S/ ' + (o.shippingCost | number: '1.2-2') }}</span></div>
+          <div class="line dim"><span>IGV incluido</span><span>S/ {{ o.taxAmount | number: '1.2-2' }}</span></div>
+          <div class="line total"><span>Total</span><span>S/ {{ o.total | number: '1.2-2' }}</span></div>
+        </aside>
+      }
+    </div>
+  }
+</div>

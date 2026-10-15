@@ -1,0 +1,55 @@
+<div class="page-head">
+  <div><h1>Categorías</h1><span class="sub">{{ items().length }} categorías</span></div>
+  <button class="btn btn-primary" (click)="startNew()"><i class="pi pi-plus"></i> Nueva categoría</button>
+</div>
+
+@if (msg()) { <p class="msg"><i class="pi pi-info-circle"></i> {{ msg() }}</p> }
+
+@if (editing()) {
+  <div class="card form-panel">
+    <h3>{{ editing() === 'new' ? 'Nueva categoría' : 'Editar categoría' }}</h3>
+    @if (err()) { <p class="err"><i class="pi pi-exclamation-triangle"></i> {{ err() }}</p> }
+    <div class="grid">
+      <div class="fld"><label>Nombre *</label><input class="inp" [(ngModel)]="model.name" placeholder="Ej. Laptops" /></div>
+      <div class="fld"><label>Categoría padre</label>
+        <select class="inp" [(ngModel)]="model.parentId">
+          <option [ngValue]="null">— Principal (sin padre)</option>
+          @for (p of parentOptions; track p.id) { <option [ngValue]="p.id">{{ p.name }}</option> }
+        </select>
+      </div>
+      <div class="fld"><label>Ícono (PrimeIcons)</label><input class="inp" [(ngModel)]="model.iconName" placeholder="pi pi-desktop" /></div>
+      <div class="fld"><label>Orden</label><input class="inp" type="number" [(ngModel)]="model.sortOrder" /></div>
+      <div class="fld f-2"><label>Imagen (URL)</label><input class="inp" [(ngModel)]="model.imageUrl" placeholder="https://..." /></div>
+      <div class="fld f-2"><label>Descripción</label><input class="inp" [(ngModel)]="model.description" /></div>
+    </div>
+    <label class="chk"><input type="checkbox" [(ngModel)]="model.isActive" /> Activa</label>
+    <div class="actions">
+      <button class="btn btn-ghost" (click)="cancel()">Cancelar</button>
+      <button class="btn btn-primary" [disabled]="saving()" (click)="save()">@if (saving()) { <i class="pi pi-spin pi-spinner"></i> } @else { Guardar }</button>
+    </div>
+  </div>
+}
+
+<div class="card">
+  @if (loading()) {
+    <div class="loading"><i class="pi pi-spin pi-spinner"></i> Cargando...</div>
+  } @else {
+    <table class="tbl">
+      <thead><tr><th>Nombre</th><th>Padre</th><th class="right">Productos</th><th>Estado</th><th></th></tr></thead>
+      <tbody>
+        @for (c of items(); track c.id) {
+          <tr>
+            <td><div class="c-cell">@if (c.iconName) { <i [class]="c.iconName"></i> } <strong>{{ c.name }}</strong></div></td>
+            <td class="muted">{{ c.parentName || '—' }}</td>
+            <td class="right">{{ c.productCount }}</td>
+            <td>@if (c.isActive) { <span class="badge badge-green">Activa</span> } @else { <span class="badge badge-gray">Inactiva</span> }</td>
+            <td class="right actions-cell">
+              <button class="btn btn-ghost btn-sm" (click)="startEdit(c)"><i class="pi pi-pencil"></i></button>
+              <button class="btn btn-ghost btn-sm danger" (click)="remove(c)"><i class="pi pi-trash"></i></button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+</div>

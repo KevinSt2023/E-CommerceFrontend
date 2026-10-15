@@ -1,0 +1,146 @@
+<div class="ax-container checkout">
+  <div class="crumbs"><a routerLink="/carrito">Carrito</a> <i class="pi pi-angle-right"></i> <span>Checkout</span></div>
+  <h1 class="ax-section-title">Finalizar compra</h1>
+
+  @if (!cart() || cart()!.items.length === 0) {
+    <div class="empty">
+      <i class="pi pi-shopping-cart"></i>
+      <p>Tu carrito está vacío.</p>
+      <a routerLink="/catalogo" class="btn-primary">Explorar productos</a>
+    </div>
+  } @else {
+    <form [formGroup]="form" (ngSubmit)="submit()" class="co-grid">
+      <div class="co-main">
+        <!-- Contacto -->
+        <section class="panel">
+          <h3><span class="step">1</span> Datos de contacto</h3>
+          <div class="fields">
+            <div class="field">
+              <label>Nombre completo *</label>
+              <input formControlName="customerName" [class.err]="isInvalid('customerName')" placeholder="Juan Pérez" />
+            </div>
+            <div class="field">
+              <label>Correo electrónico *</label>
+              <input formControlName="customerEmail" [class.err]="isInvalid('customerEmail')" placeholder="tucorreo@email.com" />
+            </div>
+            <div class="field">
+              <label>Teléfono *</label>
+              <input formControlName="customerPhone" [class.err]="isInvalid('customerPhone')" placeholder="987654321" />
+              @if (isInvalid('customerPhone')) { <small>Solo números (6 a 15 dígitos).</small> }
+            </div>
+          </div>
+        </section>
+
+        <!-- Comprobante -->
+        <section class="panel">
+          <h3><span class="step">2</span> Comprobante</h3>
+          <div class="doc-toggle">
+            <label class="radio" [class.active]="form.value.requestedDocument === 'Boleta'">
+              <input type="radio" value="Boleta" formControlName="requestedDocument" /> <i class="pi pi-file"></i> Boleta
+            </label>
+            <label class="radio" [class.active]="form.value.requestedDocument === 'Factura'">
+              <input type="radio" value="Factura" formControlName="requestedDocument" /> <i class="pi pi-building"></i> Factura
+            </label>
+          </div>
+          <div class="fields">
+            <div class="field">
+              <label>{{ form.value.requestedDocument === 'Factura' ? 'RUC *' : 'DNI (opcional)' }}</label>
+              <input
+                formControlName="customerDocumentNumber"
+                [class.err]="isInvalid('customerDocumentNumber')"
+                [placeholder]="form.value.requestedDocument === 'Factura' ? '20123456789' : '45678912'"
+              />
+              @if (isInvalid('customerDocumentNumber')) {
+                <small>{{ form.value.requestedDocument === 'Factura' ? 'RUC de 11 dígitos.' : 'DNI de 8 dígitos.' }}</small>
+              }
+            </div>
+          </div>
+        </section>
+
+        <!-- Envío -->
+        <section class="panel">
+          <h3><span class="step">3</span> Dirección de envío</h3>
+          <div class="fields">
+            <div class="field col-2">
+              <label>Destinatario *</label>
+              <input formControlName="shippingRecipient" [class.err]="isInvalid('shippingRecipient')" placeholder="Quién recibe el pedido" />
+            </div>
+            <div class="field col-2">
+              <label>Dirección *</label>
+              <input formControlName="shippingLine1" [class.err]="isInvalid('shippingLine1')" placeholder="Av. / Calle y número" />
+            </div>
+            <div class="field col-2">
+              <label>Referencia / Interior</label>
+              <input formControlName="shippingLine2" placeholder="Dpto, piso, referencia (opcional)" />
+            </div>
+            <div class="field">
+              <label>Departamento *</label>
+              <select formControlName="shippingDepartment" [class.err]="isInvalid('shippingDepartment')">
+                @for (d of departments; track d) { <option [value]="d">{{ d }}</option> }
+              </select>
+            </div>
+            <div class="field">
+              <label>Provincia *</label>
+              <input formControlName="shippingProvince" [class.err]="isInvalid('shippingProvince')" placeholder="Provincia" />
+            </div>
+            <div class="field">
+              <label>Distrito *</label>
+              <input formControlName="shippingDistrict" [class.err]="isInvalid('shippingDistrict')" placeholder="Distrito" />
+            </div>
+          </div>
+        </section>
+
+        <!-- Pago -->
+        <section class="panel">
+          <h3><span class="step">4</span> Método de pago</h3>
+          <div class="pay-options">
+            @for (p of payments(); track p.value) {
+              <button type="button" class="pay" [class.active]="form.value.paymentMethod === p.value" (click)="selectPayment(p.value)">
+                <i [class]="p.icon"></i>
+                <div><strong>{{ p.label }}</strong><span>{{ p.desc }}</span></div>
+                <i class="pi pi-check check"></i>
+              </button>
+            }
+          </div>
+          @if (form.value.paymentMethod === 'BankTransfer' && bank().bankAccountNumber) {
+            <div class="bank-box">
+              <p class="bank-title"><i class="pi pi-building-columns"></i> Datos para la transferencia</p>
+              <div class="bank-row"><span>Banco</span><strong>{{ bank().bankName }}</strong></div>
+              <div class="bank-row"><span>Cuenta</span><strong>{{ bank().bankAccountNumber }}</strong></div>
+              @if (bank().bankCci) { <div class="bank-row"><span>CCI</span><strong>{{ bank().bankCci }}</strong></div> }
+              @if (bank().bankAccountHolder) { <div class="bank-row"><span>Titular</span><strong>{{ bank().bankAccountHolder }}</strong></div> }
+              <p class="bank-hint">Realiza la transferencia por el total y envíanos el comprobante. El pedido se confirma al validar el pago.</p>
+            </div>
+          }
+          <p class="pay-note"><i class="pi pi-lock"></i> El pago con pasarela (tarjeta) se procesa de forma segura. El pedido se registra al confirmar.</p>
+        </section>
+      </div>
+
+      <!-- Resumen -->
+      <aside class="co-summary">
+        <h3>Tu pedido</h3>
+        <div class="sum-items">
+          @for (it of cart()!.items; track it.productId) {
+            <div class="sum-item">
+              <span class="q">{{ it.quantity }}×</span>
+              <span class="n">{{ it.name }}</span>
+              <span class="p">S/ {{ it.lineTotal | number: '1.2-2' }}</span>
+            </div>
+          }
+        </div>
+        <div class="line"><span>Subtotal</span><span>S/ {{ cart()!.subtotal | number: '1.2-2' }}</span></div>
+        <div class="line dim"><span>IGV incluido ({{ settings.igvPercent() }}%)</span><span>S/ {{ cart()!.igvAmount | number: '1.2-2' }}</span></div>
+        <div class="line"><span>Envío</span><span>{{ shipping() === 0 ? 'Gratis' : 'S/ ' + (shipping() | number: '1.2-2') }}</span></div>
+        <div class="line total"><span>Total</span><span>S/ {{ grandTotal() | number: '1.2-2' }}</span></div>
+
+        @if (errorMsg()) { <p class="err-box"><i class="pi pi-exclamation-triangle"></i> {{ errorMsg() }}</p> }
+
+        <button type="submit" class="btn-primary place" [disabled]="submitting()">
+          @if (submitting()) { <i class="pi pi-spin pi-spinner"></i> Procesando... }
+          @else { <i class="pi pi-lock"></i> Confirmar pedido }
+        </button>
+        <a routerLink="/carrito" class="back">← Volver al carrito</a>
+      </aside>
+    </form>
+  }
+</div>

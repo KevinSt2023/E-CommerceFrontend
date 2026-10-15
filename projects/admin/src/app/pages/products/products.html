@@ -1,0 +1,58 @@
+<div class="page-head">
+  <div><h1>Productos</h1><span class="sub">{{ total() }} productos</span></div>
+  <a routerLink="/productos/nuevo" class="btn btn-primary"><i class="pi pi-plus"></i> Nuevo producto</a>
+</div>
+
+@if (msg()) { <p class="msg"><i class="pi pi-info-circle"></i> {{ msg() }}</p> }
+
+<div class="card toolbar">
+  <div class="search"><i class="pi pi-search"></i><input class="inp" [(ngModel)]="search" (keyup.enter)="applyFilters()" placeholder="Buscar por nombre, SKU o código de barras..." /></div>
+  <select class="inp sel" [(ngModel)]="activeFilter" (change)="applyFilters()">
+    <option value="">Todos</option><option value="true">Activos</option><option value="false">Archivados</option>
+  </select>
+  <button class="btn btn-ghost btn-sm" (click)="applyFilters()">Buscar</button>
+</div>
+
+<div class="card">
+  @if (loading()) {
+    <div class="loading"><i class="pi pi-spin pi-spinner"></i> Cargando...</div>
+  } @else if (!items().length) {
+    <div class="empty"><i class="pi pi-tags"></i><p>No hay productos.</p><a routerLink="/productos/nuevo" class="btn btn-primary btn-sm">Crear el primero</a></div>
+  } @else {
+    <div class="tbl-wrap">
+      <table class="tbl">
+        <thead><tr><th>Producto</th><th>SKU</th><th>Cód. barras</th><th class="right">Precio</th><th class="right">Stock</th><th>Estado</th><th></th></tr></thead>
+        <tbody>
+          @for (p of items(); track p.id) {
+            <tr [class.archived]="!p.isActive">
+              <td>
+                <div class="p-cell">
+                  <div class="thumb">@if (p.primaryImageUrl) { <img [src]="p.primaryImageUrl" [alt]="p.name" /> } @else { <i class="pi pi-image"></i> }</div>
+                  <div><strong>{{ p.name }}</strong><span>{{ p.categoryName }}@if (p.brandName) { · {{ p.brandName }} }</span></div>
+                  @if (p.isFeatured) { <i class="pi pi-star-fill feat" title="Destacado"></i> }
+                </div>
+              </td>
+              <td class="muted">{{ p.sku }}</td>
+              <td class="muted">{{ p.barcode || '—' }}</td>
+              <td class="right">
+                <strong>S/ {{ p.price | number: '1.2-2' }}</strong>
+                @if (p.compareAtPrice) { <br /><span class="old">S/ {{ p.compareAtPrice | number: '1.2-2' }}</span> }
+              </td>
+              <td class="right"><span [class.low]="p.availableStock <= 5">{{ p.availableStock }}</span></td>
+              <td>@if (p.isActive) { <span class="badge badge-green">Activo</span> } @else { <span class="badge badge-gray">Archivado</span> }</td>
+              <td class="right actions">
+                <a class="btn btn-ghost btn-sm" [routerLink]="['/productos', p.id, 'editar']"><i class="pi pi-pencil"></i></a>
+                @if (p.isActive) { <button class="btn btn-ghost btn-sm danger" (click)="archive(p)"><i class="pi pi-inbox"></i></button> }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    <div class="pager">
+      <button class="btn btn-ghost btn-sm" [disabled]="page() <= 1" (click)="goPage(page() - 1)"><i class="pi pi-chevron-left"></i></button>
+      <span>Página {{ page() }} de {{ totalPages }}</span>
+      <button class="btn btn-ghost btn-sm" [disabled]="page() >= totalPages" (click)="goPage(page() + 1)"><i class="pi pi-chevron-right"></i></button>
+    </div>
+  }
+</div>

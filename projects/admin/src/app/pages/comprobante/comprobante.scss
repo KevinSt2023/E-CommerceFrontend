@@ -1,0 +1,68 @@
+:host { display: block; }
+.wrap { max-width: 920px; margin: 0 auto; padding: 8px 0 40px; }
+
+/* ---------- Toolbar ---------- */
+.toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 18px; }
+.back { display: inline-flex; align-items: center; gap: 8px; color: var(--ax-text-dim); font-size: 0.86rem; }
+.back:hover { color: var(--ax-red); }
+.tools { display: flex; align-items: center; gap: 12px; }
+.seg { display: inline-flex; border: 1px solid rgba(255,255,255,0.12); border-radius: 10px; overflow: hidden; }
+.seg button { padding: 8px 14px; background: transparent; color: var(--ax-text-dim); border: none; cursor: pointer; font-size: 0.84rem; display: inline-flex; align-items: center; gap: 6px; }
+.seg button.active { background: var(--ax-red); color: #fff; }
+.state { padding: 50px; text-align: center; color: var(--ax-text-dim); }
+
+/* ---------- Papel (vista en pantalla) ---------- */
+.ax-print-area { background: #fff; color: #111; margin: 0 auto; box-shadow: 0 12px 40px -12px rgba(0,0,0,0.6); }
+
+/* Ticket 80mm */
+.ticket { width: 80mm; padding: 6mm 5mm; font-family: "Consolas", "Courier New", monospace; font-size: 11px; line-height: 1.35; }
+.tk-head { text-align: center; display: flex; flex-direction: column; gap: 1px; }
+.tk-logo { max-width: 44mm; max-height: 18mm; object-fit: contain; margin: 0 auto 4px; }
+.tk-name { font-size: 13px; }
+.tk-doc { text-align: center; border-top: 1px dashed #000; border-bottom: 1px dashed #000; margin: 6px 0; padding: 4px 0; display: flex; flex-direction: column; }
+.tk-num { font-size: 12px; font-weight: 700; }
+.tk-num.proforma, .proforma { color: #b00; }
+.tk-meta { display: flex; flex-direction: column; gap: 2px; margin-bottom: 6px; }
+.tk-meta > div { display: flex; justify-content: space-between; gap: 8px; }
+.tk-meta span:first-child { color: #555; }
+.tk-items { border-top: 1px dashed #000; padding-top: 4px; }
+.tk-ir.tk-h { display: flex; justify-content: space-between; font-weight: 700; margin-bottom: 3px; }
+.tk-it { margin-bottom: 3px; }
+.tk-it-top { display: flex; justify-content: space-between; }
+.tk-it-name { font-size: 10px; }
+.tk-tot { border-top: 1px dashed #000; margin-top: 4px; padding-top: 4px; display: flex; flex-direction: column; gap: 2px; }
+.tk-tot > div { display: flex; justify-content: space-between; }
+.tk-grand { font-weight: 700; font-size: 13px; border-top: 1px solid #000; margin-top: 3px; padding-top: 3px; }
+.tk-foot { text-align: center; margin-top: 8px; display: flex; flex-direction: column; gap: 2px; font-size: 10px; }
+
+/* A4 */
+.a4 { width: 210mm; min-height: 240mm; padding: 16mm 16mm; font-family: "Segoe UI", Arial, sans-serif; font-size: 12px; color: #1a1a1a; }
+.a4-head { display: flex; justify-content: space-between; gap: 20px; border-bottom: 2px solid #111; padding-bottom: 14px; }
+.a4-brand { display: flex; gap: 14px; align-items: flex-start; }
+.a4-logo { max-width: 130px; max-height: 64px; object-fit: contain; }
+.a4-brand strong { font-size: 18px; display: block; }
+.a4-brand span { display: block; color: #555; font-size: 11px; }
+.a4-slogan { font-style: italic; }
+.a4-doc { border: 2px solid #111; border-radius: 8px; padding: 10px 16px; text-align: center; min-width: 190px; display: flex; flex-direction: column; gap: 3px; }
+.a4-ruc { font-weight: 700; }
+.a4-doc strong { font-size: 12px; }
+.a4-num { font-size: 16px; font-weight: 700; letter-spacing: 0.5px; }
+.a4-party { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 24px; margin: 16px 0; font-size: 11.5px; }
+.a4-party span { color: #666; }
+.a4-items { width: 100%; border-collapse: collapse; margin-top: 8px; }
+.a4-items th { background: #111; color: #fff; padding: 8px 10px; text-align: left; font-size: 11px; }
+.a4-items td { padding: 8px 10px; border-bottom: 1px solid #e3e3e3; vertical-align: top; }
+.a4-items small { color: #777; }
+.a4-items .r, th.r { text-align: right; }
+.a4-items .c, th.c { text-align: center; }
+.a4-bottom { display: flex; justify-content: space-between; gap: 24px; margin-top: 18px; }
+.a4-legal { flex: 1; font-size: 10.5px; color: #555; align-self: flex-end; }
+.a4-tot { width: 260px; }
+.a4-tot > div { display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid #eee; }
+.a4-grand { font-weight: 700; font-size: 15px; border-top: 2px solid #111 !important; border-bottom: none !important; margin-top: 4px; padding-top: 8px !important; }
+
+@media (max-width: 620px) {
+  .a4 { width: 100%; padding: 16px; }
+  .ticket { width: 100%; }
+  .a4-party { grid-template-columns: 1fr; }
+}

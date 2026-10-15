@@ -1,0 +1,88 @@
+<div class="page-head"><div><h1>Inventario</h1><span class="sub">Escaneo, ingresos, ajustes y kardex</span></div></div>
+
+<div class="inv-grid">
+  <div class="inv-main">
+    <!-- Escáner -->
+    <div class="card panel scan-panel">
+      <h3><i class="pi pi-qrcode"></i> Escanear / buscar por código de barras</h3>
+      <div class="scan-row">
+        <input class="inp" [(ngModel)]="scanCode" (keyup.enter)="scan()" placeholder="Escanea o escribe el código de barras..." autofocus />
+        <button class="btn btn-primary" (click)="scan()"><i class="pi pi-search"></i> Buscar</button>
+      </div>
+      @if (scanError()) { <p class="err"><i class="pi pi-exclamation-triangle"></i> {{ scanError() }}</p> }
+    </div>
+
+    <!-- Producto seleccionado -->
+    @if (selected(); as s) {
+      <div class="card panel">
+        <div class="sel-head">
+          <div><h3>{{ s.name }}</h3><span class="sku">SKU: {{ s.sku }}</span></div>
+          <div class="stock-pills">
+            <span class="pill"><small>Stock</small><b>{{ s.stock }}</b></span>
+            <span class="pill"><small>Reservado</small><b>{{ s.reservedStock }}</b></span>
+            <span class="pill hi"><small>Disponible</small><b>{{ s.availableStock }}</b></span>
+          </div>
+        </div>
+
+        @if (actionMsg()) { <p class="ok"><i class="pi pi-check-circle"></i> {{ actionMsg() }}</p> }
+
+        <div class="ops">
+          <div class="op">
+            <label>Ingresar stock (reposición)</label>
+            <div class="op-row">
+              <input class="inp sm" type="number" min="1" [(ngModel)]="receiveQty" placeholder="Cantidad" />
+              <input class="inp sm" [(ngModel)]="receiveRef" placeholder="Referencia (OC-001)" />
+              <button class="btn btn-ghost" [disabled]="busy()" (click)="receive()"><i class="pi pi-plus"></i> Ingresar</button>
+            </div>
+          </div>
+          <div class="op">
+            <label>Ajustar a stock (conteo físico)</label>
+            <div class="op-row">
+              <input class="inp sm" type="number" min="0" [(ngModel)]="adjustQty" placeholder="Nuevo stock" />
+              <button class="btn btn-ghost" [disabled]="busy()" (click)="adjust()"><i class="pi pi-sliders-h"></i> Ajustar</button>
+            </div>
+          </div>
+        </div>
+
+        <h4 class="kardex-title">Kardex (últimos movimientos)</h4>
+        @if (!movements().length) {
+          <p class="muted">Sin movimientos registrados.</p>
+        } @else {
+          <table class="tbl">
+            <thead><tr><th>Tipo</th><th class="right">Cantidad</th><th class="right">Stock resultante</th><th>Ref.</th><th>Fecha</th></tr></thead>
+            <tbody>
+              @for (m of movements(); track m.id) {
+                <tr>
+                  <td><span class="badge" [class.badge-green]="m.quantity > 0" [class.badge-red]="m.quantity < 0" [class.badge-gray]="m.quantity === 0">{{ movType(m.type) }}</span></td>
+                  <td class="right" [class.pos]="m.quantity > 0" [class.neg]="m.quantity < 0">{{ m.quantity > 0 ? '+' : '' }}{{ m.quantity }}</td>
+                  <td class="right bold">{{ m.stockAfter }}</td>
+                  <td class="muted">{{ m.reference || '—' }}</td>
+                  <td class="muted">{{ m.createdAtUtc | date: 'dd/MM/yy HH:mm' }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        }
+      </div>
+    }
+  </div>
+
+  <!-- Stock bajo -->
+  <aside class="card panel low">
+    <h3><i class="pi pi-exclamation-triangle"></i> Stock bajo</h3>
+    @if (loadingLow()) {
+      <p class="muted"><i class="pi pi-spin pi-spinner"></i> Cargando...</p>
+    } @else if (!lowStock().length) {
+      <p class="muted ok-txt"><i class="pi pi-check-circle"></i> Todo el stock está en niveles saludables.</p>
+    } @else {
+      <div class="low-list">
+        @for (item of lowStock(); track item.productId) {
+          <button class="low-item" (click)="selectLow(item)">
+            <div class="low-info"><strong>{{ item.name }}</strong><span>{{ item.sku }}</span></div>
+            <span class="low-stock" [class.zero]="item.availableStock <= 0">{{ item.availableStock }}</span>
+          </button>
+        }
+      </div>
+    }
+  </aside>
+</div>

@@ -1,0 +1,129 @@
+<a routerLink="/productos" class="back"><i class="pi pi-arrow-left"></i> Volver a productos</a>
+
+<div class="page-head"><h1>{{ editId() ? 'Editar producto' : 'Nuevo producto' }}</h1></div>
+
+@if (loading()) {
+  <div class="loading"><i class="pi pi-spin pi-spinner"></i> Cargando...</div>
+} @else {
+  <form [formGroup]="form" (ngSubmit)="submit()">
+    @if (errorMsg()) { <p class="err"><i class="pi pi-exclamation-triangle"></i> {{ errorMsg() }}</p> }
+
+    <div class="form-grid">
+      <div class="form-main">
+        <div class="card sec">
+          <h3>Información básica</h3>
+          <div class="grid2">
+            <div class="fld f-2"><label>Nombre *</label><input class="inp" formControlName="name" [class.err]="invalid('name')" placeholder="Laptop ASUS ROG..." /></div>
+            <div class="fld"><label>SKU *</label><input class="inp" formControlName="sku" [class.err]="invalid('sku')" placeholder="LAPTOP-001" /></div>
+            <div class="fld"><label>Código de barras</label><input class="inp" formControlName="barcode" placeholder="7501234500011" /></div>
+            <div class="fld"><label>Categoría *</label>
+              <select class="inp" formControlName="categoryId" [class.err]="invalid('categoryId')">
+                <option value="">Seleccionar...</option>
+                @for (c of categories(); track c.id) { <option [value]="c.id">{{ c.parentName ? c.parentName + ' › ' : '' }}{{ c.name }}</option> }
+              </select>
+            </div>
+            <div class="fld"><label>Marca</label>
+              <select class="inp" formControlName="brandId">
+                <option value="">Sin marca</option>
+                @for (b of brands(); track b.id) { <option [value]="b.id">{{ b.name }}</option> }
+              </select>
+            </div>
+            <div class="fld"><label>Condición</label>
+              <select class="inp" formControlName="condition">
+                @for (c of conditions; track c.value) { <option [value]="c.value">{{ c.label }}</option> }
+              </select>
+            </div>
+            <div class="fld"><label>Modelo</label><input class="inp" formControlName="model" placeholder="ROG Strix G16" /></div>
+            <div class="fld"><label>MPN</label><input class="inp" formControlName="mpn" placeholder="N° parte fabricante" /></div>
+          </div>
+        </div>
+
+        <div class="card sec">
+          <h3>Descripción</h3>
+          <div class="fld"><label>Descripción corta</label><input class="inp" formControlName="shortDescription" placeholder="Resumen para la grilla" /></div>
+          <div class="fld"><label>Descripción completa</label><textarea class="inp" rows="5" formControlName="description" placeholder="Detalle del producto..."></textarea></div>
+        </div>
+
+        <div class="card sec">
+          <h3>
+            Imágenes
+            <span class="img-actions">
+              <button type="button" class="btn btn-primary btn-sm" (click)="fileInput.click()" [disabled]="uploading()">
+                <i class="pi" [class.pi-upload]="!uploading()" [class.pi-spin]="uploading()" [class.pi-spinner]="uploading()"></i>
+                {{ uploading() ? 'Subiendo…' : 'Subir desde PC' }}
+              </button>
+              <button type="button" class="btn btn-ghost btn-sm" (click)="addImage()"><i class="pi pi-link"></i> Por URL</button>
+            </span>
+          </h3>
+          <input #fileInput type="file" accept="image/png,image/jpeg,image/webp,image/gif,image/avif" multiple hidden (change)="onUploadFiles($event)" />
+          @if (uploadError()) { <p class="hint err"><i class="pi pi-exclamation-triangle"></i> {{ uploadError() }}</p> }
+          @if (!images.length) { <p class="hint">Sube imágenes desde tu PC (JPG/PNG/WEBP, máx. 5 MB) o agrega una URL. Marca una como principal.</p> }
+          <div formArrayName="images" class="rows">
+            @for (img of images.controls; track $index) {
+              <div class="img-row" [formGroupName]="$index">
+                <div class="img-prev">@if (img.get('url')?.value) { <img [src]="img.get('url')?.value" alt="" /> } @else { <i class="pi pi-image"></i> }</div>
+                <input class="inp" formControlName="url" placeholder="https://..." />
+                <input class="inp alt" formControlName="altText" placeholder="Texto alt" />
+                <label class="primary"><input type="radio" [checked]="img.get('isPrimary')?.value" (change)="setPrimary($index)" /> Principal</label>
+                <button type="button" class="btn btn-ghost btn-sm danger" (click)="removeImage($index)"><i class="pi pi-trash"></i></button>
+              </div>
+            }
+          </div>
+        </div>
+
+        <div class="card sec">
+          <h3>Especificaciones técnicas <button type="button" class="btn btn-ghost btn-sm" (click)="addSpec()"><i class="pi pi-plus"></i> Agregar</button></h3>
+          @if (!specifications.length) { <p class="hint">Ej. Grupo "Memoria", Nombre "RAM", Valor "16GB DDR5".</p> }
+          <div formArrayName="specifications" class="rows">
+            @for (s of specifications.controls; track $index) {
+              <div class="spec-row" [formGroupName]="$index">
+                <input class="inp" formControlName="group" placeholder="Grupo" />
+                <input class="inp" formControlName="name" placeholder="Nombre" />
+                <input class="inp" formControlName="value" placeholder="Valor" />
+                <button type="button" class="btn btn-ghost btn-sm danger" (click)="removeSpec($index)"><i class="pi pi-trash"></i></button>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+
+      <aside class="form-side">
+        <div class="card sec">
+          <h3>Precios</h3>
+          <div class="fld"><label>Precio de venta (S/) *</label><input class="inp" type="number" step="0.01" formControlName="price" [class.err]="invalid('price')" /></div>
+          <div class="fld"><label>Precio antes (S/)</label><input class="inp" type="number" step="0.01" formControlName="compareAtPrice" placeholder="Para mostrar oferta" /></div>
+          <div class="fld"><label>Costo (S/)</label><input class="inp" type="number" step="0.01" formControlName="cost" placeholder="Para márgenes" /></div>
+        </div>
+
+        <div class="card sec">
+          <h3>Inventario</h3>
+          @if (editId()) {
+            <p class="hint"><i class="pi pi-info-circle"></i> El stock se gestiona desde <strong>Inventario</strong> (kardex).</p>
+          } @else {
+            <div class="fld"><label>Stock inicial</label><input class="inp" type="number" formControlName="stock" /></div>
+          }
+          <div class="fld"><label>Umbral stock bajo</label><input class="inp" type="number" formControlName="lowStockThreshold" /></div>
+          <div class="fld"><label>Máx. por compra</label><input class="inp" type="number" formControlName="maxOrderQuantity" placeholder="Sin límite" /></div>
+          <div class="fld"><label>Garantía (meses)</label><input class="inp" type="number" formControlName="warrantyMonths" /></div>
+          <div class="fld"><label>Peso (kg)</label><input class="inp" type="number" step="0.01" formControlName="weightKg" /></div>
+          <label class="chk"><input type="checkbox" formControlName="allowBackorder" /> Permitir venta sin stock (backorder)</label>
+        </div>
+
+        <div class="card sec">
+          <h3>Visibilidad y SEO</h3>
+          <label class="chk"><input type="checkbox" formControlName="isActive" /> Activo (visible en la tienda)</label>
+          <label class="chk"><input type="checkbox" formControlName="isFeatured" /> Destacado</label>
+          <div class="fld"><label>Meta título</label><input class="inp" formControlName="metaTitle" /></div>
+          <div class="fld"><label>Meta descripción</label><textarea class="inp" rows="2" formControlName="metaDescription"></textarea></div>
+        </div>
+      </aside>
+    </div>
+
+    <div class="form-actions">
+      <a routerLink="/productos" class="btn btn-ghost">Cancelar</a>
+      <button type="submit" class="btn btn-primary" [disabled]="saving()">
+        @if (saving()) { <i class="pi pi-spin pi-spinner"></i> Guardando... } @else { <i class="pi pi-check"></i> {{ editId() ? 'Guardar cambios' : 'Crear producto' }} }
+      </button>
+    </div>
+  </form>
+}

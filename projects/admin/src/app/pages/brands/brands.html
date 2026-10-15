@@ -1,0 +1,46 @@
+<div class="page-head">
+  <div><h1>Marcas</h1><span class="sub">{{ items().length }} marcas</span></div>
+  <button class="btn btn-primary" (click)="startNew()"><i class="pi pi-plus"></i> Nueva marca</button>
+</div>
+
+@if (msg()) { <p class="msg"><i class="pi pi-info-circle"></i> {{ msg() }}</p> }
+
+@if (editing()) {
+  <div class="card form-panel">
+    <h3>{{ editing() === 'new' ? 'Nueva marca' : 'Editar marca' }}</h3>
+    @if (err()) { <p class="err"><i class="pi pi-exclamation-triangle"></i> {{ err() }}</p> }
+    <div class="grid">
+      <div class="fld"><label>Nombre *</label><input class="inp" [(ngModel)]="model.name" placeholder="Ej. ASUS" /></div>
+      <div class="fld"><label>Logo (URL)</label><input class="inp" [(ngModel)]="model.logoUrl" placeholder="https://..." /></div>
+      <div class="fld f-2"><label>Descripción</label><input class="inp" [(ngModel)]="model.description" /></div>
+    </div>
+    <label class="chk"><input type="checkbox" [(ngModel)]="model.isActive" /> Activa</label>
+    <div class="actions">
+      <button class="btn btn-ghost" (click)="cancel()">Cancelar</button>
+      <button class="btn btn-primary" [disabled]="saving()" (click)="save()">@if (saving()) { <i class="pi pi-spin pi-spinner"></i> } @else { Guardar }</button>
+    </div>
+  </div>
+}
+
+<div class="card">
+  @if (loading()) {
+    <div class="loading"><i class="pi pi-spin pi-spinner"></i> Cargando...</div>
+  } @else {
+    <table class="tbl">
+      <thead><tr><th>Marca</th><th class="right">Productos</th><th>Estado</th><th></th></tr></thead>
+      <tbody>
+        @for (b of items(); track b.id) {
+          <tr>
+            <td><div class="c-cell">@if (b.logoUrl) { <img class="logo" [src]="b.logoUrl" [alt]="b.name" /> } <strong>{{ b.name }}</strong></div></td>
+            <td class="right">{{ b.productCount }}</td>
+            <td>@if (b.isActive) { <span class="badge badge-green">Activa</span> } @else { <span class="badge badge-gray">Inactiva</span> }</td>
+            <td class="right actions-cell">
+              <button class="btn btn-ghost btn-sm" (click)="startEdit(b)"><i class="pi pi-pencil"></i></button>
+              <button class="btn btn-ghost btn-sm danger" (click)="remove(b)"><i class="pi pi-trash"></i></button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+</div>

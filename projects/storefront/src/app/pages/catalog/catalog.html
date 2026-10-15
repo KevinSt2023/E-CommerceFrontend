@@ -1,0 +1,102 @@
+<div class="ax-container catalog">
+  <div class="crumbs"><a routerLink="/">Inicio</a> <i class="pi pi-angle-right"></i> <span>{{ title() }}</span></div>
+
+  <div class="cat-head">
+    <h1>{{ title() }}</h1>
+    <div class="tools">
+      <button class="filters-toggle" (click)="filtersOpen.set(!filtersOpen())">
+        <i class="pi pi-sliders-h"></i> Filtros @if (activeFilterCount) { <span class="fcount">{{ activeFilterCount }}</span> }
+      </button>
+      <span class="count">{{ total() }} productos</span>
+      <div class="sort">
+        <i class="pi pi-sort-alt"></i>
+        <select [(ngModel)]="sort" (change)="changeSort()">
+          @for (o of sortOptions; track o.value) { <option [value]="o.value">{{ o.label }}</option> }
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="layout" [class.filters-open]="filtersOpen()">
+    <aside class="filters">
+      <div class="f-head">
+        <h3><i class="pi pi-sliders-h"></i> Filtros</h3>
+        @if (activeFilterCount) { <button class="clear" (click)="clearFilters()">Limpiar ({{ activeFilterCount }})</button> }
+        <button class="f-close" (click)="filtersOpen.set(false)"><i class="pi pi-times"></i></button>
+      </div>
+
+      <div class="f-group">
+        <h4>Categorías</h4>
+        <a class="f-link" [class.active]="!categorySlug" routerLink="/catalogo">Todas</a>
+        @for (c of categories(); track c.id) {
+          <a class="f-link" [class.active]="categorySlug === c.slug" [routerLink]="['/catalogo']" [queryParams]="{ categoria: c.slug }">{{ c.name }}</a>
+          @for (sub of c.children; track sub.id) {
+            <a class="f-link sub" [class.active]="categorySlug === sub.slug" [routerLink]="['/catalogo']" [queryParams]="{ categoria: sub.slug }">{{ sub.name }}</a>
+          }
+        }
+      </div>
+
+      <div class="f-group">
+        <h4>Precio (S/)</h4>
+        <div class="price-row">
+          <input class="price-inp" type="number" min="0" [(ngModel)]="minPrice" placeholder="Mín" />
+          <span>—</span>
+          <input class="price-inp" type="number" min="0" [(ngModel)]="maxPrice" placeholder="Máx" />
+          <button class="price-go" (click)="applyFilters()"><i class="pi pi-check"></i></button>
+        </div>
+      </div>
+
+      <div class="f-group">
+        <h4>Marca</h4>
+        <div class="brands">
+          @for (b of brands(); track b.id) {
+            <label class="chk">
+              <input type="checkbox" [checked]="isBrandChecked(b.slug)" (change)="toggleBrand(b.slug, $any($event.target).checked)" />
+              <span>{{ b.name }}</span>
+            </label>
+          }
+        </div>
+      </div>
+
+      <div class="f-group">
+        <h4>Condición</h4>
+        <div class="conds">
+          @for (c of conditions; track c.value) {
+            <button class="cond-chip" [class.active]="condition === c.value" (click)="setCondition(c.value)">{{ c.label }}</button>
+          }
+        </div>
+      </div>
+
+      <div class="f-group">
+        <h4>Disponibilidad</h4>
+        <label class="chk"><input type="checkbox" [checked]="inStockOnly" (change)="toggleInStock()" /> <span>Solo en stock</span></label>
+        <label class="chk"><input type="checkbox" [checked]="onSaleOnly" (change)="toggleOnSale()" /> <span>En oferta</span></label>
+      </div>
+    </aside>
+
+    @if (filtersOpen()) { <div class="f-overlay" (click)="filtersOpen.set(false)"></div> }
+
+    <section class="results">
+      @if (loading() && !products().length) {
+        <div class="grid">@for (i of [1,2,3,4,5,6]; track i) { <div class="skeleton"></div> }</div>
+      } @else if (!products().length) {
+        <div class="empty">
+          <i class="pi pi-search"></i>
+          <p>No encontramos productos con esos filtros.</p>
+          <button (click)="clearFilters()" class="btn-ghost">Limpiar filtros</button>
+        </div>
+      } @else {
+        <div class="grid">
+          @for (p of products(); track p.id) { <ax-product-card [product]="p" /> }
+        </div>
+        @if (canLoadMore) {
+          <div class="more">
+            <button (click)="loadMore()" [disabled]="loading()">
+              @if (loading()) { <i class="pi pi-spin pi-spinner"></i> } @else { Cargar más }
+            </button>
+          </div>
+        }
+      }
+    </section>
+  </div>
+</div>

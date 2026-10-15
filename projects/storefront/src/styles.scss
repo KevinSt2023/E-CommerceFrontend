@@ -1,0 +1,203 @@
+/* ===== PrimeIcons ===== */
+@import 'primeicons/primeicons.css';
+
+/* ===== Paleta ALTEXA ===== */
+:root {
+  --ax-black: #0b0b0d;
+  --ax-bg: #0d0d11;
+  --ax-surface: #141418;
+  --ax-surface-2: #1b1b22;
+  --ax-surface-3: #22222b;
+  --ax-border: #2a2a33;
+  --ax-border-soft: #22222a;
+
+  --ax-silver: #d6d9de;
+  --ax-silver-dim: #9aa0a8;
+  --ax-text: #edeff3;
+  --ax-text-dim: #a6abb5;
+  --ax-text-muted: #71767e;
+
+  --ax-red: #ff1e2d;
+  --ax-red-600: #e11021;
+  --ax-red-700: #bd0c1a;
+  --ax-red-glow: rgba(255, 30, 45, 0.35);
+
+  --ax-metal: linear-gradient(135deg, #f2f3f5 0%, #c3c7cd 28%, #82868e 52%, #e4e6ea 74%, #9aa0a8 100%);
+  --ax-red-grad: linear-gradient(135deg, #ff3b47 0%, #e11021 55%, #9c0f1b 100%);
+  --ax-radius: 14px;
+  --ax-radius-lg: 20px;
+  --ax-shadow: 0 10px 30px -12px rgba(0, 0, 0, 0.7);
+  --ax-shadow-lg: 0 24px 60px -24px rgba(0, 0, 0, 0.9);
+  --ax-header-h: 132px;
+
+  /* Micro-interacciones: Expo.out — base de todo el movimiento */
+  --ax-ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --ax-ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ax-glass: rgba(20, 20, 26, 0.6);
+  --ax-glass-border: rgba(255, 255, 255, 0.08);
+  --ax-hairline: rgba(255, 255, 255, 0.06);
+
+  color-scheme: dark;
+}
+
+/* ===== Base ===== */
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+}
+
+body {
+  background: var(--ax-bg);
+  background-image:
+    radial-gradient(1200px 600px at 85% -10%, rgba(255, 30, 45, 0.08), transparent 60%),
+    radial-gradient(900px 500px at -10% 10%, rgba(120, 130, 150, 0.06), transparent 55%);
+  background-attachment: fixed;
+  color: var(--ax-text);
+  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  font-size: 15px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+h1, h2, h3, h4 { font-weight: 700; letter-spacing: -0.01em; color: var(--ax-text); margin: 0; }
+
+a { color: inherit; text-decoration: none; }
+
+img { max-width: 100%; display: block; }
+
+/* ===== Tipografía de marca ===== */
+.ax-display { font-family: 'Orbitron', 'Inter', sans-serif; letter-spacing: 0.04em; }
+
+.ax-wordmark {
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  background: var(--ax-metal);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: 0 0 1px rgba(255, 255, 255, 0.2);
+}
+.ax-wordmark .ax-x { color: var(--ax-red); -webkit-text-fill-color: var(--ax-red); }
+
+/* ===== Layout helpers ===== */
+.ax-container {
+  width: 100%;
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.ax-section { padding: 46px 0; }
+
+.ax-section-title {
+  font-size: 1.5rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 22px;
+}
+.ax-section-title::before {
+  content: '';
+  width: 4px;
+  height: 24px;
+  border-radius: 3px;
+  background: var(--ax-red-grad);
+  box-shadow: 0 0 12px var(--ax-red-glow);
+}
+
+/* ===== Efectos ===== */
+.ax-card {
+  position: relative;
+  background: linear-gradient(180deg, var(--ax-surface-2), var(--ax-surface));
+  border: 1px solid var(--ax-border);
+  border-radius: var(--ax-radius);
+}
+/* Filo de luz superior sutil (sensación premium / vidrio) */
+.ax-card::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 1px;
+  border-radius: inherit;
+  background: linear-gradient(90deg, transparent, var(--ax-hairline) 20%, rgba(255, 255, 255, 0.14) 50%, var(--ax-hairline) 80%, transparent);
+  pointer-events: none;
+}
+
+/* Vidrio esmerilado (header, paneles flotantes) */
+.ax-glass {
+  background: var(--ax-glass);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+  backdrop-filter: blur(16px) saturate(140%);
+  border: 1px solid var(--ax-glass-border);
+}
+
+/* Patrón de rejilla tenue para fondos cinematográficos */
+.ax-grid-bg {
+  background-image:
+    linear-gradient(var(--ax-hairline) 1px, transparent 1px),
+    linear-gradient(90deg, var(--ax-hairline) 1px, transparent 1px);
+  background-size: 44px 44px;
+}
+
+.ax-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--ax-border);
+}
+
+/* ===== Scrollbar ===== */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: var(--ax-black); }
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(var(--ax-surface-3), var(--ax-surface-2));
+  border-radius: 10px;
+  border: 2px solid var(--ax-black);
+}
+::-webkit-scrollbar-thumb:hover { background: var(--ax-red-700); }
+
+/* ===== Overrides PrimeNG suaves ===== */
+.p-component { font-family: 'Inter', sans-serif; }
+
+/* ===== Movimiento compartido ===== */
+/* Aparición escalonada para grillas (cada hijo entra un poco después) */
+.ax-reveal > * {
+  opacity: 0;
+  transform: translateY(14px);
+  animation: axReveal 0.55s var(--ax-ease) forwards;
+}
+@for $i from 1 through 12 {
+  .ax-reveal > *:nth-child(#{$i}) { animation-delay: #{$i * 0.045}s; }
+}
+@keyframes axReveal { to { opacity: 1; transform: none; } }
+
+/* Flotación lenta de resplandores ambientales */
+@keyframes axFloat {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(0, -26px, 0); }
+}
+
+/* Realimentación de pulsación (escala al presionar) en acciones táctiles */
+button, .btn-primary, .btn-ghost, .ax-press { transition: transform 0.18s var(--ax-ease); }
+button:active, .btn-primary:active, .btn-ghost:active, .ax-press:active { transform: scale(0.97); }
+
+/* Respeto a usuarios con movimiento reducido */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+  .ax-reveal > * { opacity: 1; transform: none; }
+}

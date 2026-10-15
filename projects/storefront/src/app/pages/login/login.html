@@ -1,0 +1,102 @@
+<div class="ax-container auth-wrap">
+  <div class="auth-card">
+    <div class="auth-head">
+      <span class="ax-wordmark brand">ALTE<span class="ax-x">X</span>A</span>
+      <p>{{ needs2fa() ? 'Verificación en dos pasos' : (mode() === 'login' ? 'Bienvenido de vuelta' : 'Crea tu cuenta') }}</p>
+    </div>
+
+    @if (errorMsg()) { <p class="err"><i class="pi pi-exclamation-triangle"></i> {{ errorMsg() }}</p> }
+
+    @if (needs2fa()) {
+      <form [formGroup]="twoFaForm" (ngSubmit)="submitTwoFa()" class="form twofa">
+        <div class="twofa-icon"><i class="pi pi-shield"></i></div>
+        <p class="twofa-text">Ingresa el código de 6 dígitos de tu app de autenticación (Google Authenticator, Authy…).</p>
+        <div class="field">
+          <label>Código de verificación</label>
+          <div class="input-wrap"><i class="pi pi-key"></i>
+            <input formControlName="code" inputmode="numeric" autocomplete="one-time-code" maxlength="9" placeholder="123456" class="code-input" />
+          </div>
+          <small class="hint">¿Perdiste tu dispositivo? Escribe uno de tus códigos de recuperación.</small>
+        </div>
+        <button type="submit" class="submit" [disabled]="submitting()">
+          @if (submitting()) { <i class="pi pi-spin pi-spinner"></i> } @else { <i class="pi pi-check"></i> Verificar }
+        </button>
+        <button type="button" class="link-btn" (click)="cancelTwoFa()">← Usar otra cuenta</button>
+      </form>
+    } @else {
+      <div class="tabs">
+        <button [class.active]="mode() === 'login'" (click)="setMode('login')">Iniciar sesión</button>
+        <button [class.active]="mode() === 'register'" (click)="setMode('register')">Crear cuenta</button>
+      </div>
+
+      @if (mode() === 'login') {
+        <form [formGroup]="loginForm" (ngSubmit)="submitLogin()" class="form">
+          <div class="field">
+            <label>Correo electrónico</label>
+            <div class="input-wrap"><i class="pi pi-envelope"></i>
+              <input type="email" formControlName="email" [class.err]="invalid('login','email')" placeholder="tucorreo@email.com" />
+            </div>
+          </div>
+          <div class="field">
+            <label>Contraseña</label>
+            <div class="input-wrap"><i class="pi pi-lock"></i>
+              <input [type]="showPass() ? 'text' : 'password'" formControlName="password" [class.err]="invalid('login','password')" placeholder="Tu contraseña" />
+              <button type="button" class="toggle" (click)="showPass.set(!showPass())"><i class="pi" [class.pi-eye]="!showPass()" [class.pi-eye-slash]="showPass()"></i></button>
+            </div>
+          </div>
+          <button type="submit" class="submit" [disabled]="submitting()">
+            @if (submitting()) { <i class="pi pi-spin pi-spinner"></i> } @else { <i class="pi pi-sign-in"></i> Iniciar sesión }
+          </button>
+        </form>
+      } @else {
+        <form [formGroup]="registerForm" (ngSubmit)="submitRegister()" class="form">
+          <div class="row-2">
+            <div class="field">
+              <label>Nombres</label>
+              <div class="input-wrap"><i class="pi pi-user"></i>
+                <input formControlName="firstName" [class.err]="invalid('register','firstName')" placeholder="María" />
+              </div>
+            </div>
+            <div class="field">
+              <label>Apellidos</label>
+              <div class="input-wrap"><i class="pi pi-user"></i>
+                <input formControlName="lastName" [class.err]="invalid('register','lastName')" placeholder="Fernández" />
+              </div>
+            </div>
+          </div>
+          <div class="field">
+            <label>Correo electrónico</label>
+            <div class="input-wrap"><i class="pi pi-envelope"></i>
+              <input type="email" formControlName="email" [class.err]="invalid('register','email')" placeholder="tucorreo@email.com" />
+            </div>
+          </div>
+          <div class="field">
+            <label>Teléfono (opcional)</label>
+            <div class="input-wrap"><i class="pi pi-phone"></i>
+              <input formControlName="phoneNumber" [class.err]="invalid('register','phoneNumber')" placeholder="987654321" />
+            </div>
+          </div>
+          <div class="field">
+            <label>Contraseña</label>
+            <div class="input-wrap"><i class="pi pi-lock"></i>
+              <input [type]="showPass() ? 'text' : 'password'" formControlName="password" [class.err]="invalid('register','password')" placeholder="Mínimo 8 caracteres" />
+              <button type="button" class="toggle" (click)="showPass.set(!showPass())"><i class="pi" [class.pi-eye]="!showPass()" [class.pi-eye-slash]="showPass()"></i></button>
+            </div>
+            @if (invalid('register','password')) { <small>Usa mayúscula, minúscula y número (mín. 8).</small> }
+          </div>
+          <button type="submit" class="submit" [disabled]="submitting()">
+            @if (submitting()) { <i class="pi pi-spin pi-spinner"></i> } @else { <i class="pi pi-user-plus"></i> Crear cuenta }
+          </button>
+        </form>
+      }
+    }
+
+    @if (googleEnabled && !needs2fa()) {
+      <div class="divider"><span>o</span></div>
+      <div class="google-btn" #googleBtn></div>
+    }
+
+    <p class="secure-note"><i class="pi pi-shield"></i> Tus datos viajan cifrados. Nunca guardamos tu contraseña en texto plano.</p>
+    <a routerLink="/" class="back">← Volver a la tienda</a>
+  </div>
+</div>

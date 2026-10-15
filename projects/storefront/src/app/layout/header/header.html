@@ -1,0 +1,95 @@
+<!-- Top strip -->
+<div class="topbar">
+  <div class="ax-container topbar-inner">
+    <span><i class="pi pi-truck"></i> Envío gratis desde S/ {{ settings.freeShippingThreshold() | number: '1.0-0' }}</span>
+    <div class="topbar-links">
+      <a routerLink="/ayuda"><i class="pi pi-question-circle"></i> Ayuda</a>
+      <a routerLink="/cuenta"><i class="pi pi-map-marker"></i> Rastrea tu pedido</a>
+      <span class="sep"></span>
+      @if (settings.settings().phone) { <span><i class="pi pi-phone"></i> {{ settings.settings().phone }}</span> }
+    </div>
+  </div>
+</div>
+
+<!-- Main bar -->
+<div class="mainbar">
+  <div class="ax-container mainbar-inner">
+    <button class="burger" (click)="mobileOpen.set(!mobileOpen())" aria-label="Menú">
+      <i class="pi" [class.pi-bars]="!mobileOpen()" [class.pi-times]="mobileOpen()"></i>
+    </button>
+
+    <a routerLink="/" class="logo" (click)="closeMenus()">
+      <span class="logo-mark">◣◢</span>
+      <span class="ax-wordmark logo-text">ALTE<span class="ax-x">X</span>A</span>
+    </a>
+
+    <form class="search" (submit)="search(); $event.preventDefault()">
+      <i class="pi pi-search"></i>
+      <input
+        type="search"
+        [(ngModel)]="searchTerm"
+        name="q"
+        placeholder="Busca laptops, GPUs, periféricos..."
+        [ngModelOptions]="{ standalone: true }"
+      />
+      <button type="submit">Buscar</button>
+    </form>
+
+    <div class="actions">
+      <a [routerLink]="auth.user() ? '/cuenta' : '/cuenta/login'" class="action" (click)="closeMenus()">
+        <i class="pi pi-user"></i>
+        <span class="action-label">{{ auth.user() ? auth.user()!.fullName.split(' ')[0] : 'Ingresar' }}</span>
+      </a>
+      <a routerLink="/carrito" class="action cart" (click)="closeMenus()">
+        <i class="pi pi-shopping-cart"></i>
+        @if (cart.itemCount() > 0) {
+          <span class="cart-badge">{{ cart.itemCount() }}</span>
+        }
+        <span class="action-label">Carrito</span>
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- Category nav -->
+<div class="navbar">
+  <div class="ax-container navbar-inner">
+    <button class="cats-btn" (click)="toggleMega()" [class.open]="megaOpen()">
+      <i class="pi pi-th-large"></i> Categorías <i class="pi pi-chevron-down chev"></i>
+    </button>
+
+    <nav class="quicklinks" [class.mobile-open]="mobileOpen()">
+      @for (c of categories(); track c.id) {
+        <a [routerLink]="['/catalogo']" [queryParams]="{ categoria: c.slug }" (click)="closeMenus()">{{ c.name }}</a>
+      }
+      <a class="hot" [routerLink]="['/catalogo']" [queryParams]="{ ofertas: true }" (click)="closeMenus()">
+        <i class="pi pi-bolt"></i> Ofertas
+      </a>
+    </nav>
+  </div>
+
+  <!-- Mega panel -->
+  @if (megaOpen()) {
+    <div class="mega" (mouseleave)="megaOpen.set(false)">
+      <div class="ax-container mega-grid">
+        @for (c of categories(); track c.id) {
+          <div class="mega-col">
+            <a class="mega-head" [routerLink]="['/catalogo']" [queryParams]="{ categoria: c.slug }" (click)="closeMenus()">
+              @if (c.iconName) { <i class="pi" [class]="c.iconName"></i> }
+              {{ c.name }}
+            </a>
+            @for (sub of c.children; track sub.id) {
+              <a class="mega-sub" [routerLink]="['/catalogo']" [queryParams]="{ categoria: sub.slug }" (click)="closeMenus()">
+                {{ sub.name }}
+              </a>
+            }
+          </div>
+        }
+      </div>
+    </div>
+  }
+</div>
+
+@if (megaOpen()) {
+  <div class="overlay" (click)="megaOpen.set(false)"></div>
+}

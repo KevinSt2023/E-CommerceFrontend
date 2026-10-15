@@ -1,0 +1,78 @@
+@if (errorMsg()) { <p class="tf-err"><i class="pi pi-exclamation-triangle"></i> {{ errorMsg() }}</p> }
+
+@switch (state()) {
+  @case ('idle') {
+    @if (enabled()) {
+      <div class="tf-status on">
+        <i class="pi pi-check-circle"></i>
+        <div><strong>2FA activado</strong><span>Tu cuenta pide un código al iniciar sesión.</span></div>
+        <button class="btn-ghost danger" (click)="startDisable()">Desactivar</button>
+      </div>
+    } @else {
+      <div class="tf-status off">
+        <i class="pi pi-mobile"></i>
+        <div><strong>Verificación en dos pasos (2FA)</strong><span>Protege tu cuenta con un código temporal de tu teléfono.</span></div>
+        <button class="btn-primary" [disabled]="busy()" (click)="startSetup()">
+          @if (busy()) { <i class="pi pi-spin pi-spinner"></i> } @else { Activar }
+        </button>
+      </div>
+    }
+  }
+
+  @case ('setup') {
+    <div class="tf-setup">
+      <ol class="steps">
+        <li>Escanea este QR con <strong>Google Authenticator</strong>, <strong>Authy</strong> o similar.</li>
+      </ol>
+      <div class="qr-wrap">
+        @if (qrDataUrl()) { <img [src]="qrDataUrl()" alt="Código QR 2FA" /> }
+        <div class="manual">
+          <span>¿No puedes escanear? Ingresa esta clave:</span>
+          <code>{{ secret() }}</code>
+        </div>
+      </div>
+      <div class="tf-field">
+        <label>Ingresa el código de 6 dígitos para confirmar</label>
+        <input [(ngModel)]="code" inputmode="numeric" maxlength="6" placeholder="123456" class="code-input" />
+      </div>
+      <div class="tf-actions">
+        <button class="btn-ghost" (click)="cancel()">Cancelar</button>
+        <button class="btn-primary" [disabled]="busy()" (click)="confirmEnable()">
+          @if (busy()) { <i class="pi pi-spin pi-spinner"></i> } @else { Activar 2FA }
+        </button>
+      </div>
+    </div>
+  }
+
+  @case ('recovery') {
+    <div class="tf-recovery">
+      <div class="rec-head"><i class="pi pi-shield"></i><strong>¡2FA activado!</strong></div>
+      <p>Guarda estos <strong>códigos de recuperación</strong> en un lugar seguro. Te permitirán entrar si pierdes tu teléfono. Cada uno se usa una sola vez.</p>
+      <div class="codes">
+        @for (c of recoveryCodes(); track c) { <span>{{ c }}</span> }
+      </div>
+      <div class="tf-actions">
+        <button class="btn-ghost" (click)="copyCodes()">
+          <i class="pi" [class.pi-copy]="!copied()" [class.pi-check]="copied()"></i>
+          {{ copied() ? 'Copiado' : 'Copiar códigos' }}
+        </button>
+        <button class="btn-primary" (click)="finishRecovery()">Ya los guardé</button>
+      </div>
+    </div>
+  }
+
+  @case ('disabling') {
+    <div class="tf-disable">
+      <p>Para desactivar el 2FA, ingresa un código actual de tu app de autenticación.</p>
+      <div class="tf-field">
+        <input [(ngModel)]="code" inputmode="numeric" maxlength="6" placeholder="123456" class="code-input" />
+      </div>
+      <div class="tf-actions">
+        <button class="btn-ghost" (click)="cancel()">Cancelar</button>
+        <button class="btn-primary danger" [disabled]="busy()" (click)="confirmDisable()">
+          @if (busy()) { <i class="pi pi-spin pi-spinner"></i> } @else { Desactivar 2FA }
+        </button>
+      </div>
+    </div>
+  }
+}

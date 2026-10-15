@@ -1,0 +1,64 @@
+<div class="page-head">
+  <div><h1>Cupones</h1><span class="sub">{{ items().length }} cupones</span></div>
+  <button class="btn btn-primary" (click)="startNew()"><i class="pi pi-plus"></i> Nuevo cupón</button>
+</div>
+
+@if (msg()) { <p class="msg"><i class="pi pi-info-circle"></i> {{ msg() }}</p> }
+
+@if (editing()) {
+  <div class="card form-panel">
+    <h3>{{ editing() === 'new' ? 'Nuevo cupón' : 'Editar cupón' }}</h3>
+    @if (err()) { <p class="err"><i class="pi pi-exclamation-triangle"></i> {{ err() }}</p> }
+    <div class="grid">
+      <div class="fld"><label>Código *</label><input class="inp code" [(ngModel)]="model.code" placeholder="GAMER10" /></div>
+      <div class="fld"><label>Tipo de descuento</label>
+        <select class="inp" [(ngModel)]="model.isPercentage">
+          <option [ngValue]="true">Porcentaje (%)</option>
+          <option [ngValue]="false">Monto fijo (S/)</option>
+        </select>
+      </div>
+      <div class="fld"><label>Valor {{ model.isPercentage ? '(%)' : '(S/)' }} *</label><input class="inp" type="number" step="0.01" [(ngModel)]="model.value" /></div>
+      <div class="fld"><label>Compra mínima (S/)</label><input class="inp" type="number" step="0.01" [(ngModel)]="model.minimumOrderAmount" placeholder="Opcional" /></div>
+      @if (model.isPercentage) {
+        <div class="fld"><label>Tope de descuento (S/)</label><input class="inp" type="number" step="0.01" [(ngModel)]="model.maxDiscountAmount" placeholder="Opcional" /></div>
+      }
+      <div class="fld"><label>Límite de usos</label><input class="inp" type="number" [(ngModel)]="model.usageLimit" placeholder="Ilimitado" /></div>
+      <div class="fld"><label>Válido desde</label><input class="inp" type="date" [(ngModel)]="model.startsAtUtc" /></div>
+      <div class="fld"><label>Válido hasta</label><input class="inp" type="date" [(ngModel)]="model.endsAtUtc" /></div>
+      <div class="fld f-2"><label>Descripción</label><input class="inp" [(ngModel)]="model.description" /></div>
+    </div>
+    <label class="chk"><input type="checkbox" [(ngModel)]="model.isActive" /> Activo</label>
+    <div class="actions">
+      <button class="btn btn-ghost" (click)="cancel()">Cancelar</button>
+      <button class="btn btn-primary" [disabled]="saving()" (click)="save()">@if (saving()) { <i class="pi pi-spin pi-spinner"></i> } @else { Guardar }</button>
+    </div>
+  </div>
+}
+
+<div class="card">
+  @if (loading()) {
+    <div class="loading"><i class="pi pi-spin pi-spinner"></i> Cargando...</div>
+  } @else if (!items().length) {
+    <div class="empty"><i class="pi pi-ticket"></i><p>No hay cupones aún.</p></div>
+  } @else {
+    <table class="tbl">
+      <thead><tr><th>Código</th><th>Descuento</th><th>Mínimo</th><th>Usos</th><th>Vigencia</th><th>Estado</th><th></th></tr></thead>
+      <tbody>
+        @for (c of items(); track c.id) {
+          <tr>
+            <td><strong class="code">{{ c.code }}</strong></td>
+            <td>{{ c.isPercentage ? c.value + '%' : 'S/ ' + (c.value | number: '1.2-2') }}</td>
+            <td class="muted">{{ c.minimumOrderAmount ? 'S/ ' + (c.minimumOrderAmount | number: '1.2-2') : '—' }}</td>
+            <td>{{ c.timesUsed }}@if (c.usageLimit) { / {{ c.usageLimit }} }</td>
+            <td class="muted">@if (c.endsAtUtc) { hasta {{ c.endsAtUtc | date: 'dd/MM/yy' }} } @else { Sin límite }</td>
+            <td>@if (c.isActive) { <span class="badge badge-green">Activo</span> } @else { <span class="badge badge-gray">Inactivo</span> }</td>
+            <td class="right actions-cell">
+              <button class="btn btn-ghost btn-sm" (click)="startEdit(c)"><i class="pi pi-pencil"></i></button>
+              <button class="btn btn-ghost btn-sm danger" (click)="remove(c)"><i class="pi pi-trash"></i></button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+</div>

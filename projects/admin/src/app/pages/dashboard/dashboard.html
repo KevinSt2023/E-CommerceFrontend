@@ -1,0 +1,94 @@
+<div class="page-head">
+  <h1>Dashboard</h1>
+  <span class="sub">Resumen de tu tienda ALTEXA</span>
+</div>
+
+@if (loading()) {
+  <div class="loading"><i class="pi pi-spin pi-spinner"></i> Cargando métricas...</div>
+} @else if (data(); as d) {
+  <div class="kpis">
+    <div class="kpi card">
+      <div class="kpi-ico green"><i class="pi pi-dollar"></i></div>
+      <div><span class="kpi-label">Ingresos totales</span><strong class="kpi-val">S/ {{ d.revenueTotal | number: '1.2-2' }}</strong></div>
+    </div>
+    <div class="kpi card">
+      <div class="kpi-ico red"><i class="pi pi-calendar"></i></div>
+      <div><span class="kpi-label">Hoy</span><strong class="kpi-val">S/ {{ d.revenueToday | number: '1.2-2' }}</strong></div>
+    </div>
+    <div class="kpi card">
+      <div class="kpi-ico blue"><i class="pi pi-chart-bar"></i></div>
+      <div><span class="kpi-label">Este mes</span><strong class="kpi-val">S/ {{ d.revenueMonth | number: '1.2-2' }}</strong></div>
+    </div>
+    <div class="kpi card">
+      <div class="kpi-ico amber"><i class="pi pi-receipt"></i></div>
+      <div><span class="kpi-label">Ticket promedio</span><strong class="kpi-val">S/ {{ d.avgTicket | number: '1.2-2' }}</strong></div>
+    </div>
+  </div>
+
+  <div class="kpis mini">
+    <a routerLink="/pedidos" class="kpi card sm">
+      <div class="kpi-ico amber"><i class="pi pi-clock"></i></div>
+      <div><span class="kpi-label">Pedidos pendientes</span><strong class="kpi-val">{{ d.ordersPending }}</strong></div>
+    </a>
+    <a routerLink="/pedidos" class="kpi card sm">
+      <div class="kpi-ico green"><i class="pi pi-check-circle"></i></div>
+      <div><span class="kpi-label">Pedidos pagados</span><strong class="kpi-val">{{ d.ordersPaid }}</strong></div>
+    </a>
+    <div class="kpi card sm">
+      <div class="kpi-ico blue"><i class="pi pi-users"></i></div>
+      <div><span class="kpi-label">Clientes</span><strong class="kpi-val">{{ d.customersCount }}</strong></div>
+    </div>
+    <a routerLink="/inventario" class="kpi card sm" [class.alert]="d.lowStockCount > 0">
+      <div class="kpi-ico red"><i class="pi pi-exclamation-triangle"></i></div>
+      <div><span class="kpi-label">Stock bajo</span><strong class="kpi-val">{{ d.lowStockCount }}</strong></div>
+    </a>
+  </div>
+
+  <div class="grid-2">
+    <div class="card panel">
+      <h3>Ventas últimos 7 días</h3>
+      <div class="chart">
+        @for (s of d.salesLast7Days; track s.date) {
+          <div class="bar-col">
+            <div class="bar-track"><div class="bar" [style.height]="barHeight(s.total)" [title]="'S/ ' + (s.total | number:'1.2-2')"></div></div>
+            <span class="bar-lbl">{{ s.date | date: 'EEE' }}</span>
+          </div>
+        }
+      </div>
+    </div>
+
+    <div class="card panel">
+      <h3>Productos más vendidos</h3>
+      <div class="top-list">
+        @for (p of d.topProducts; track p.sku; let i = $index) {
+          <div class="top-item">
+            <span class="rank">{{ i + 1 }}</span>
+            <div class="top-info"><strong>{{ p.name }}</strong><span>{{ p.sku }}</span></div>
+            <span class="sold">{{ p.soldCount }} vend.</span>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+
+  <div class="card panel">
+    <div class="panel-head"><h3>Pedidos recientes</h3><a routerLink="/pedidos" class="see">Ver todos <i class="pi pi-arrow-right"></i></a></div>
+    <div class="tbl-wrap">
+      <table class="tbl">
+        <thead><tr><th>Pedido</th><th>Cliente</th><th>Estado</th><th>Pago</th><th>Fecha</th><th class="right">Total</th></tr></thead>
+        <tbody>
+          @for (o of d.recentOrders; track o.orderNumber) {
+            <tr>
+              <td><a class="link" [routerLink]="['/pedidos', o.orderNumber]">{{ o.orderNumber }}</a></td>
+              <td>{{ o.customerName }}</td>
+              <td><span class="badge" [class]="statusClass(o.status)">{{ statusLabel(o.status) }}</span></td>
+              <td><span class="badge" [class]="statusClass(o.paymentStatus)">{{ statusLabel(o.paymentStatus) }}</span></td>
+              <td class="muted">{{ o.createdAtUtc | date: 'dd/MM/yy HH:mm' }}</td>
+              <td class="right bold">S/ {{ o.total | number: '1.2-2' }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+}

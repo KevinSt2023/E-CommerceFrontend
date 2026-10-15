@@ -1,0 +1,23 @@
+.page-head { margin-bottom: 20px; }
+.page-head h1 { font-size: 1.6rem; }
+.page-head .sub { color: var(--ax-text-dim); font-size: 0.88rem; }
+
+.toolbar { display: flex; align-items: center; gap: 12px; padding: 14px 16px; margin-bottom: 16px; flex-wrap: wrap; }
+.search { flex: 1; min-width: 220px; position: relative; display: flex; align-items: center; }
+.search i { position: absolute; left: 12px; color: var(--ax-silver-dim); }
+.search .inp { padding-left: 36px; }
+.chips { display: flex; gap: 6px; flex-wrap: wrap; }
+.chip { padding: 7px 13px; border-radius: 999px; border: 1px solid var(--ax-border); background: var(--ax-surface); color: var(--ax-text-dim); font-size: 0.78rem; font-weight: 600; cursor: pointer; transition: all 0.16s; }
+.chip:hover { color: var(--ax-text); }
+.chip.active { background: rgba(255, 30, 45, 0.12); border-color: color-mix(in srgb, var(--ax-red) 40%, transparent); color: #fff; }
+
+.loading, .empty { padding: 55px; text-align: center; color: var(--ax-text-dim); }
+.empty i { font-size: 2.2rem; display: block; margin-bottom: 12px; color: var(--ax-text-muted); }
+.loading i { margin-right: 8px; }
+
+.tbl-wrap { overflow-x: auto; }
+.right { text-align: right; }
+.bold { font-weight: 800; }
+.muted { color: var(--ax-text-muted); font-size: 0.8rem; }
+
+.pager { display: flex; align-items: center; justify-content: center; gap: 14px; padding: 16px; font-size: 0.84rem; color: var(--ax-text-dim); }

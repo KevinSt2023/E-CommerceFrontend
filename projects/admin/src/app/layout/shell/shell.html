@@ -1,0 +1,44 @@
+<div class="shell" [class.menu-open]="menuOpen()">
+  <aside class="sidebar">
+    <div class="brand">
+      <span class="ax-wordmark">ALTE<span class="ax-x">X</span>A</span>
+      <span class="brand-tag">Admin</span>
+    </div>
+    <nav class="nav">
+      @for (item of visibleNav; track item.label) {
+        @if (item.soon) {
+          <span class="nav-item soon"><i [class]="item.icon"></i> {{ item.label }} <span class="soon-tag">Pronto</span></span>
+        } @else {
+          <a class="nav-item" [routerLink]="'/' + item.path" routerLinkActive="active"
+             [routerLinkActiveOptions]="{ exact: item.exact ?? false }" (click)="menuOpen.set(false)">
+            <i [class]="item.icon"></i> {{ item.label }}
+          </a>
+        }
+      }
+    </nav>
+    <div class="sidebar-foot">
+      <div class="secure"><i class="pi pi-shield"></i> Sesión protegida con 2FA</div>
+    </div>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <button class="burger" (click)="menuOpen.set(!menuOpen())"><i class="pi pi-bars"></i></button>
+      <div class="spacer"></div>
+      <div class="user">
+        <div class="user-info">
+          <strong>{{ user()?.fullName }}</strong>
+          <span class="role">{{ roleLabel() }}</span>
+        </div>
+        <div class="avatar">{{ (user()?.fullName || 'A').charAt(0) }}</div>
+        <button class="logout" (click)="logout()" title="Cerrar sesión"><i class="pi pi-sign-out"></i></button>
+      </div>
+    </header>
+
+    <main class="content">
+      <router-outlet />
+    </main>
+  </div>
+
+  @if (menuOpen()) { <div class="overlay" (click)="menuOpen.set(false)"></div> }
+</div>

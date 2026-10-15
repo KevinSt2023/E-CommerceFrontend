@@ -1,0 +1,30 @@
+.login-wrap {
+  min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px;
+  background: radial-gradient(800px 420px at 80% -10%, rgba(255, 30, 45, 0.14), transparent 60%);
+}
+.login-card { width: 100%; max-width: 400px; padding: 34px; box-shadow: var(--ax-shadow); }
+.head { text-align: center; margin-bottom: 24px; }
+.brand { font-size: 1.9rem; }
+.sub { display: block; margin-top: 8px; color: var(--ax-text-dim); font-size: 0.9rem; }
+
+.err { font-size: 0.82rem; color: #ff6b6b; background: rgba(255, 30, 45, 0.1); border: 1px solid rgba(255, 30, 45, 0.3); border-radius: 10px; padding: 10px 12px; margin-bottom: 16px; }
+.err i { margin-right: 6px; }
+
+label { display: block; font-size: 0.8rem; color: var(--ax-text-dim); margin: 14px 0 6px; font-weight: 500; }
+.iw { position: relative; display: flex; align-items: center; }
+.iw > i:first-child { position: absolute; left: 12px; color: var(--ax-silver-dim); font-size: 0.9rem; }
+.iw .inp { padding-left: 36px; }
+.eye { position: absolute; right: 8px; background: none; border: none; color: var(--ax-silver-dim); cursor: pointer; padding: 6px; }
+.full { width: 100%; margin-top: 20px; }
+
+.twofa { text-align: center; }
+.tf-icon { width: 54px; height: 54px; border-radius: 50%; margin: 0 auto 10px; display: flex; align-items: center; justify-content: center; background: rgba(255, 30, 45, 0.12); border: 1px solid rgba(255, 30, 45, 0.35); color: var(--ax-red); font-size: 1.4rem; }
+.tf-text { color: var(--ax-text-dim); font-size: 0.86rem; margin-bottom: 14px; }
+.code { text-align: center; letter-spacing: 0.4em; font-size: 1.2rem; font-weight: 700; }
+
+.divider { display: flex; align-items: center; gap: 12px; margin: 18px 0; color: var(--ax-text-muted); font-size: 0.78rem; }
+.divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--ax-border); }
+.google-btn { display: flex; justify-content: center; }
+
+.note { text-align: center; font-size: 0.74rem; color: var(--ax-text-muted); margin-top: 20px; }
+.note i { color: var(--ax-green); margin-right: 6px; }
